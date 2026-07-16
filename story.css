@@ -7,3 +7,4 @@
   .story-footer{flex-direction:column}
   .story-ending{padding:28px 22px}
 }
+.story-cover{width:min(620px,100%);height:auto;display:block;margin:45px 0 28px;border:1px solid #4d4944;filter:saturate(.84) contrast(1.05)}

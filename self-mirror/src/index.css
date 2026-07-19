@@ -1,0 +1,82 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import "tailwindcss";
+
+.dyslexia-mode body,
+.dyslexia-mode button,
+.dyslexia-mode input,
+.dyslexia-mode textarea,
+.dyslexia-mode select {
+  font-family: Verdana, Arial, sans-serif !important;
+  letter-spacing: 0.045em;
+  word-spacing: 0.12em;
+  line-height: 1.75;
+}
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-display: "Space Grotesk", sans-serif;
+
+  --color-brand-red: #ef4444;
+  --color-brand-red-dark: #7f1d1d;
+  --color-brand-gray-dark: #121212;
+  --color-brand-gray-light: #f5f5f5;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0d0d0d;
+}
+::-webkit-scrollbar-thumb {
+  background: #2a2a2a;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #ef4444;
+}
+
+/* Base styles for a deep dark philosophical interface */
+body {
+  background-color: #050505;
+  color: #e5e5e5;
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+/* Keyframes for subtle pulsing/radar effects shown in the mockups */
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.1;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0.5;
+  }
+}
+
+.radar-glow {
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.15);
+}
+
+.crimson-gradient {
+  background: radial-gradient(circle at center, rgba(239, 68, 68, 0.12) 0%, rgba(0, 0, 0, 0) 70%);
+}
+
+.card-dark {
+  background-color: rgba(18, 18, 18, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.card-dark-hover:hover {
+  border-color: rgba(239, 68, 68, 0.3);
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.05);
+}

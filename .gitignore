@@ -1,0 +1,10 @@
+node_modules/
+dist/
+self-mirror/dist/
+self-mirror/node_modules/
+workers/*/node_modules/
+.dev.vars
+.env
+.env.local
+*.log
+.wrangler/

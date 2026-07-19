@@ -1,0 +1,11 @@
+{
+  "name": "burkeonis-website",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "build": "npm run build --prefix self-mirror && node scripts/build-site.mjs",
+    "pages:build": "npm ci --prefix self-mirror && npm run build",
+    "typecheck": "npm run lint --prefix self-mirror && npm run typecheck --prefix workers/self-mirror-api",
+    "test": "npm test --prefix self-mirror && npm test --prefix workers/self-mirror-api"
+  }
+}

@@ -1,0 +1,42 @@
+name: Self Mirror checks
+
+on:
+  pull_request:
+    paths:
+      - 'self-mirror/**'
+      - 'workers/self-mirror-api/**'
+      - 'scripts/build-site.mjs'
+      - 'package.json'
+      - '.github/workflows/self-mirror-checks.yml'
+  push:
+    branches:
+      - feature/self-mirror
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            self-mirror/package-lock.json
+            workers/self-mirror-api/package-lock.json
+      - name: Install application dependencies
+        run: npm ci --prefix self-mirror
+      - name: Install Worker dependencies
+        run: npm ci --prefix workers/self-mirror-api
+      - name: TypeScript
+        run: npm run typecheck
+      - name: Worker tests
+        run: npm test
+      - name: Production build
+        run: npm run build
+      - name: Secret patterns
+        run: |
+          ! grep -RIE --exclude-dir=node_modules --exclude-dir=dist --exclude='package-lock.json' '(sk_live_[A-Za-z0-9]+|whsec_[A-Za-z0-9]{24,}|AIza[0-9A-Za-z_-]{20,})' .

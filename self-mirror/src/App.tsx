@@ -39,6 +39,7 @@ import { OpenAiCompatibleProvider } from './providers/openAiCompatibleProvider';
 import { byokVault } from './providers/byokVault';
 import { BurkeonisCloudProvider } from './api/cloudProvider';
 import { ReflectionUnavailableError } from './api/errors';
+import { memoryFromConfirmedReflection } from './engine/memoryEngine';
 
 const Dashboard = lazy(() => import('./components/Dashboard'));
 const ChatInterface = lazy(() => import('./components/ChatInterface'));
@@ -273,6 +274,7 @@ export default function App() {
           shadowPattern: null,
           defenseIntensity: 0,
           avoidedQuestion: replyData.nextStep,
+          reflection: replyData,
         }
       };
 
@@ -329,6 +331,24 @@ export default function App() {
   const handleDeleteMemoryItem = (id: string) => {
     const filtered = memoryItems.filter(m => m.id !== id);
     saveMemoryItems(filtered);
+  };
+
+  const handleConfirmObservation = (confirmation: 'yes' | 'partly' | 'no') => {
+    if (!activeSessionId) return;
+    const session = sessions.find((item) => item.id === activeSessionId);
+    if (!session) return;
+    const memory = memoryFromConfirmedReflection(session, confirmation);
+    if (!memory) return;
+    saveMemoryItems([memory, ...memoryItems.filter((item) => item.id !== memory.id)]);
+  };
+
+  const handleDeleteSession = (id: string) => {
+    saveSessions(sessions.filter((session) => session.id !== id));
+    saveMemoryItems(memoryItems.filter((item) => item.sourceSessionId !== id));
+    if (activeSessionId === id) {
+      setActiveSessionId(null);
+      setActiveTab('home');
+    }
   };
 
   const handleToggleMemoryTracking = (enabled: boolean) => {
@@ -531,6 +551,7 @@ export default function App() {
                 intensityScore={activeSession?.intensityMax}
                 guidedFlow={activeSession?.guidedFlow}
                 onUpdateGuidedFlow={handleUpdateGuidedFlow}
+                onConfirmObservation={handleConfirmObservation}
               />
             </motion.div>
           )}
@@ -587,9 +608,11 @@ export default function App() {
             >
               <MemoryConsole 
                 memoryItems={memoryItems}
+                sessions={sessions}
                 userProfile={userProfile}
                 onUpdateMemoryItem={handleUpdateMemoryItem}
                 onDeleteMemoryItem={handleDeleteMemoryItem}
+                onDeleteSession={handleDeleteSession}
                 onToggleMemoryTracking={handleToggleMemoryTracking}
                 onClearAllData={handleClearAllData}
               />

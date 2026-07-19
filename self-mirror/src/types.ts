@@ -1,3 +1,5 @@
+import type { ReflectionResult } from './schemas/reflection';
+
 export interface MessageMeta {
   contradiction: string | null;
   shadowPattern: {
@@ -11,6 +13,7 @@ export interface MessageMeta {
   evidenceCount?: number;
   confidence?: number;
   insightLevel?: 'Observation' | 'Possible Pattern' | 'Emerging Pattern' | 'Repeating Pattern';
+  reflection?: ReflectionResult;
 }
 
 export interface Message {

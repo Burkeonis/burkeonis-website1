@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { MemoryItem, UserProfile } from '../types';
+import { MemoryItem, Session, UserProfile } from '../types';
 import { 
   Database, 
   Trash2, 
@@ -20,18 +20,22 @@ import {
 
 interface MemoryConsoleProps {
   memoryItems: MemoryItem[];
+  sessions: Session[];
   userProfile: UserProfile;
   onUpdateMemoryItem: (item: MemoryItem) => void;
   onDeleteMemoryItem: (id: string) => void;
+  onDeleteSession: (id: string) => void;
   onToggleMemoryTracking: (enabled: boolean) => void;
   onClearAllData: () => void;
 }
 
 export default function MemoryConsole({
   memoryItems,
+  sessions,
   userProfile,
   onUpdateMemoryItem,
   onDeleteMemoryItem,
+  onDeleteSession,
   onToggleMemoryTracking,
   onClearAllData
 }: MemoryConsoleProps) {
@@ -126,11 +130,37 @@ export default function MemoryConsole({
           <div className="space-y-1">
             <h4 className="font-mono text-[10px] tracking-widest text-white uppercase font-bold">SOVEREIGN PRIVACY STATEMENT</h4>
             <p className="text-xs text-gray-400 font-sans leading-relaxed">
-              Self Mirror operates on local client persistence. The AI model receives historical logs only to prevent repetitive loops. It does not store personal datasets on external servers. Wiping data here clears your record completely.
+              Self Mirror stores your reflection history on this device. A processing provider receives only the current session context when you submit a reflection. Self Mirror does not store reflection bodies in D1, Firebase, Stripe, or Worker logs. Wiping data here clears your local record completely.
             </p>
           </div>
         </div>
       </div>
+
+      <section className="space-y-3 border border-white/5 bg-[#0b0b0b] p-4">
+        <div>
+          <span className="font-mono text-[9px] uppercase tracking-widest text-red-500">LOCAL DIALOGUE LOGS</span>
+          <p className="mt-1 text-xs leading-relaxed text-gray-400">Delete one reflection without wiping the rest. Any confirmed memory sourced only from that reflection is removed with it.</p>
+        </div>
+        {sessions.length === 0 ? (
+          <p className="border border-dashed border-white/5 p-4 text-center font-mono text-[10px] uppercase text-gray-500">No reflection logs stored.</p>
+        ) : (
+          <div className="grid gap-2 sm:grid-cols-2">
+            {sessions.map((session) => (
+              <div key={session.id} className="flex items-center justify-between gap-3 border border-white/5 bg-black/30 p-3">
+                <div className="min-w-0"><strong className="block truncate text-xs text-white">{session.title}</strong><span className="font-mono text-[9px] text-gray-500">{session.date} · {session.messages.length} messages</span></div>
+                <button
+                  className="shrink-0 p-2 text-gray-500 transition-colors hover:text-red-500"
+                  title="Delete reflection log"
+                  aria-label={`Delete ${session.title}`}
+                  onClick={() => {
+                    if (confirm(`Delete ${session.title} and memory sourced from it?`)) onDeleteSession(session.id);
+                  }}
+                ><Trash2 className="h-4 w-4" /></button>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
 
       {/* Filters and Counters */}
       <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
@@ -175,7 +205,7 @@ export default function MemoryConsole({
             <div className="space-y-2">
               <h3 className="font-display text-lg font-bold text-white uppercase tracking-wider">PURGE ENTIRE RECORD?</h3>
               <p className="text-xs text-gray-400 leading-relaxed font-sans">
-                This will erase your name, diagnostic blueprint, all historical dialogue reflection logs, and verified memory traits. Your experience will completely reset to the onboarding phase. This cannot be undone.
+                This will erase your name, reflection blueprint, all historical dialogue logs, and confirmed memory items. Your experience will completely reset to the onboarding phase. This cannot be undone.
               </p>
             </div>
             <div className="grid grid-cols-2 gap-3 pt-2">

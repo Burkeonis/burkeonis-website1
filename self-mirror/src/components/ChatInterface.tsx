@@ -26,6 +26,7 @@ interface ChatInterfaceProps {
   intensityScore?: number;
   guidedFlow?: GuidedFlow;
   onUpdateGuidedFlow?: (flow: GuidedFlow) => void;
+  onConfirmObservation?: (confirmation: 'yes' | 'partly' | 'no') => void;
 }
 
 const GUIDED_QUESTIONS = [
@@ -45,7 +46,8 @@ export default function ChatInterface({
   isGenerating,
   intensityScore = 0,
   guidedFlow,
-  onUpdateGuidedFlow
+  onUpdateGuidedFlow,
+  onConfirmObservation,
 }: ChatInterfaceProps) {
   const [inputText, setInputText] = useState('');
   const [guidedInput, setGuidedInput] = useState('');
@@ -126,9 +128,7 @@ Please formulate an objective OBSERVATION summarizing this interaction based str
       ...guidedFlow,
       confirmation: value
     });
-
-    // Send acknowledgement message to model to finalize session logs
-    onSendMessage(`I confirm that your observation is: ${value.toUpperCase()}. Save this calibration log to my memory.`);
+    onConfirmObservation?.(value);
   };
 
   // Helper to render deconstructive loading phrases
@@ -141,7 +141,7 @@ Please formulate an objective OBSERVATION summarizing this interaction based str
       'Scanning for contradictions...',
       'Evaluating the mask...',
       'Separating the wound from the weapon...',
-      'Exposing hidden motives...'
+      'Testing possible blind spots...'
     ];
     let i = 0;
     const interval = setInterval(() => {

@@ -160,3 +160,32 @@ footer>a:last-child { justify-self:end; }
 /* High contrast Burkeonis accent text */
 .red-label,.path-card>span,.about-signoff span,.mission-copy blockquote,.future-note span,.ecosystem-links span,.journey-list span,.roadmap-grid span,.book-grid span,.journal-grid span,.journey-list>a>b,.build-stages b,.build-stages strong,.quote-panel span,.journal-note span,.inner-footer p,.contact-strip>div>span,.book-description strong{color:#ff9a72;font-weight:700}
 .section-kicker span,.project-type,.record-code,.track-notes>div>span,.coming-card>span,.coming-heading>span{color:#ff9a72!important;font-weight:700}
+
+/* Music archive repair */
+.music-library {
+  display: grid;
+  gap: 2rem;
+}
+
+.track-card {
+  display: grid;
+  gap: 1rem;
+}
+
+.track-cover {
+  width: min(100%, 520px);
+  height: auto;
+  display: block;
+  border: 1px solid rgba(255,255,255,.12);
+}
+
+.track-card audio {
+  width: min(100%, 520px);
+}
+
+@media (min-width: 900px) {
+  .music-library {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 0 4vw 4rem;
+  }
+}

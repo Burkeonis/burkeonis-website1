@@ -1,8 +1,10 @@
 {
-  "name": "Burkeonis",
-  "short_name": "Burkeonis",
-  "description": "Music. Shadow Work. Self Mirror. The Burkeonis ecosystem.",
-  "start_url": "/",
+  "name": "Burkeonis Pause",
+  "short_name": "Pause",
+  "description": "One-tap access to Burkeonis Pause and Self Mirror.",
+  "id": "/pause.html",
+  "start_url": "/pause.html?source=installed",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#1b1d1e",
   "theme_color": "#1b1d1e",
@@ -11,12 +13,34 @@
     {
       "src": "/assets/icons/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "/assets/icons/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Pause Now",
+      "short_name": "Pause",
+      "description": "Open the rapid regulation screen.",
+      "url": "/pause.html?source=shortcut"
+    },
+    {
+      "name": "Open Self Mirror",
+      "short_name": "Mirror",
+      "description": "Open the full Self Mirror analysis tool.",
+      "url": "/self-mirror.html?source=shortcut"
+    },
+    {
+      "name": "Open RAD",
+      "short_name": "RAD",
+      "description": "Open RAD before reacting.",
+      "url": "/rad.html?source=shortcut"
     }
   ]
 }

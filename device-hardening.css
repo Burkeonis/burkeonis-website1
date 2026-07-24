@@ -1,0 +1,23 @@
+/* Cross-device hardening for phone, tablet, iPad and desktop */
+:root{color-scheme:dark}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-padding-top:150px}
+body{min-width:320px;min-height:100dvh;padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)}
+button,a,input,textarea,select{touch-action:manipulation}
+button,a{ -webkit-tap-highlight-color:rgba(208,123,95,.2)}
+button,input,textarea,select{font-size:16px}
+textarea{max-width:100%;border-radius:0;-webkit-appearance:none;appearance:none}
+a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #f0a07f;outline-offset:3px}
+.site-header{padding-top:max(16px,env(safe-area-inset-top));}
+.site-header nav{-webkit-overflow-scrolling:touch;overscroll-behavior-inline:contain;scroll-snap-type:x proximity}
+.site-header nav a{scroll-snap-align:start;min-height:44px;display:inline-flex;align-items:center}
+footer{padding-bottom:max(28px,env(safe-area-inset-bottom))}
+.miso-actions a,.timer-card button,.miso-controls button,.nlw-actions a,.nlw-controls button{min-height:48px}
+.miso-controls,.nlw-controls{padding-bottom:max(18px,env(safe-area-inset-bottom))}
+@supports not (height:100svh){.hero{min-height:100vh}.miso-hero{min-height:78vh}.nlw-hero{min-height:calc(100vh - 116px)}}
+@media (hover:none) and (pointer:coarse){.scripts button,.nlw-tool-grid>a{min-height:144px}.site-header nav a{padding-inline:4px}.miso-actions a,.timer-card button,.miso-controls button,.nlw-actions a,.nlw-controls button{min-height:52px}}
+@media (min-width:701px) and (max-width:1180px){.site-header{grid-template-columns:minmax(0,1fr) auto}.site-header nav{gap:22px}.miso-hero{grid-template-columns:80px minmax(0,1fr);padding-inline:32px}.miso-hero aside{grid-column:1/-1}.map-section form{grid-template-columns:1fr 1fr}.nlw-hero{grid-template-columns:minmax(260px,.8fr) minmax(0,1.2fr)}.nlw-private{grid-column:1/-1}.nlw-intro{padding-inline:38px}}
+@media (max-width:700px){html{scroll-padding-top:128px}.site-header{position:sticky;top:0}.site-header .header-entry{display:none}.site-header nav{grid-column:1/-1}.miso-hero,.nlw-intro{padding-left:max(22px,env(safe-area-inset-left));padding-right:max(22px,env(safe-area-inset-right))}.miso-section,.nlw-section{padding-left:max(18px,env(safe-area-inset-left));padding-right:max(18px,env(safe-area-inset-right))}.miso-hero h1,.nlw-intro h1{overflow-wrap:anywhere}.timer-card strong{font-size:48px}.scripts button{font-size:22px}.nlw-cover{min-height:min(540px,72svh)}}
+@media (orientation:landscape) and (max-height:520px){.miso-hero{min-height:auto}.miso-signal{display:none}.nlw-cover{min-height:420px}.site-header{position:relative}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+@media (prefers-contrast:more){a,button,input,textarea,.miso-hero aside,.nlw-private,.protocol-card{border-width:2px!important}}
+@media print{body{padding:0!important;color:#111!important;background:#fff!important}a[href]::after{content:none!important}}

@@ -2,12 +2,14 @@
 :root{color-scheme:dark}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-padding-top:150px}
 body{min-width:320px;min-height:100dvh;padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)}
+.skip-link{position:fixed;left:12px;top:12px;z-index:9999;padding:12px 16px;background:#f1ede5;color:#111;transform:translateY(-160%);transition:transform .15s ease}
+.skip-link:focus{transform:translateY(0)}
 button,a,input,textarea,select{touch-action:manipulation}
-button,a{ -webkit-tap-highlight-color:rgba(208,123,95,.2)}
+button,a{-webkit-tap-highlight-color:rgba(208,123,95,.2)}
 button,input,textarea,select{font-size:16px}
 textarea{max-width:100%;border-radius:0;-webkit-appearance:none;appearance:none}
 a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #f0a07f;outline-offset:3px}
-.site-header{padding-top:max(16px,env(safe-area-inset-top));}
+.site-header{padding-top:max(16px,env(safe-area-inset-top))}
 .site-header nav{-webkit-overflow-scrolling:touch;overscroll-behavior-inline:contain;scroll-snap-type:x proximity}
 .site-header nav a{scroll-snap-align:start;min-height:44px;display:inline-flex;align-items:center}
 footer{padding-bottom:max(28px,env(safe-area-inset-bottom))}
@@ -20,4 +22,4 @@ footer{padding-bottom:max(28px,env(safe-area-inset-bottom))}
 @media (orientation:landscape) and (max-height:520px){.miso-hero{min-height:auto}.miso-signal{display:none}.nlw-cover{min-height:420px}.site-header{position:relative}}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
 @media (prefers-contrast:more){a,button,input,textarea,.miso-hero aside,.nlw-private,.protocol-card{border-width:2px!important}}
-@media print{body{padding:0!important;color:#111!important;background:#fff!important}a[href]::after{content:none!important}}
+@media print{body{padding:0!important;color:#111!important;background:#fff!important}a[href]::after{content:none!important}.skip-link{display:none!important}}

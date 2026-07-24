@@ -2,22 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="description" content="No Last Words by Burkeonis. A song and private guided space for sudden loss, unfinished conversations, grief and remembrance.">
+  <meta name="theme-color" content="#090b0c">
   <title>Burkeonis — No Last Words</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="no-last-words.css">
+  <link rel="stylesheet" href="device-hardening.css">
 </head>
 <body id="top" class="nlw-page">
+<a class="skip-link" href="#main-content">SKIP TO CONTENT</a>
 <header class="site-header">
-  <a class="brand" href="index.html" aria-label="Burkeonis home"><div class="brand-mark"><span>B</span></div>BURKEONIS</a>
+  <a class="brand" href="index.html" aria-label="Burkeonis home"><div class="brand-mark" aria-hidden="true"><span>B</span></div>BURKEONIS</a>
   <nav aria-label="Primary navigation">
     <a href="index.html">HOME</a><a href="music.html">MUSIC</a><a href="shadow-work.html">SHADOW WORK</a><a href="self-mirror.html">SELF MIRROR</a><a href="tools.html">PROTOCOLS</a><a href="misophonia.html">MISOPHONIA</a><a href="about.html">ABOUT</a>
   </nav>
   <a class="header-entry" href="#journey">BEGIN <span>→</span></a>
 </header>
 
-<main>
+<main id="main-content">
   <section class="nlw-hero" aria-labelledby="nlw-title">
     <figure class="nlw-cover">
       <img src="no-last-words-artwork.svg" alt="No Last Words artwork: a solitary figure before a fractured gold horizon, surrounded by empty picture frames and ash">
@@ -34,7 +37,7 @@
           <source src="no-last-words.mp3" type="audio/mpeg">
           Your browser does not support audio playback.
         </audio>
-        <p id="audio-status" class="nlw-status">WEB MASTER AUDIO</p>
+        <p id="audio-status" class="nlw-status" role="status" aria-live="polite">WEB MASTER AUDIO</p>
       </div>
       <div class="nlw-actions"><a class="primary-entry" href="#story">READ THE STORY <span>↓</span></a><a class="secondary-entry" href="#journey">ENTER THE JOURNEY <span>↓</span></a></div>
     </div>
@@ -54,15 +57,15 @@
   </section>
 
   <section id="journey" class="nlw-journey nlw-section">
-    <div class="nlw-section-head"><div><p class="nlw-kicker">PRIVATE GUIDED WORK</p><h2>THE UNFINISHED CONVERSATION</h2></div><div class="nlw-progress"><span id="nlw-progress-text">0 / 5 COMPLETE</span><div><i id="nlw-progress-bar"></i></div></div></div>
+    <div class="nlw-section-head"><div><p class="nlw-kicker">PRIVATE GUIDED WORK</p><h2>THE UNFINISHED CONVERSATION</h2></div><div class="nlw-progress"><span id="nlw-progress-text">0 / 5 COMPLETE</span><div role="progressbar" aria-label="Writing progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="nlw-progress-track"><i id="nlw-progress-bar"></i></div></div></div>
     <p class="nlw-instruction">Do one section or do all five. There is no right way to grieve and no prize for forcing yourself through more than you can hold today.</p>
     <form id="nlw-form" novalidate>
-      <article class="nlw-step" data-step="1"><header><span>01</span><div><p>NAME THE LOSS</p><h3>WHAT HAPPENED?</h3></div></header><label>Tell the truth of the loss in your own words.<textarea name="loss" placeholder="What happened, who did you lose and what changed when they were gone?"></textarea></label><label>What part still feels impossible to accept?<textarea name="acceptance" placeholder="The part my mind keeps fighting is..."></textarea></label></article>
-      <article class="nlw-step" data-step="2"><header><span>02</span><div><p>THE LAST REAL MOMENT</p><h3>WHAT DO YOU REMEMBER?</h3></div></header><label>Write the last moment you remember with them.<textarea name="lastMoment" placeholder="Where were you? What was ordinary about it? What do you notice now that you did not notice then?"></textarea></label><label>What do you wish you had understood in that moment?<textarea name="understood" placeholder="I wish I knew..."></textarea></label></article>
-      <article class="nlw-step" data-step="3"><header><span>03</span><div><p>NO EDITING. NO POLISH.</p><h3>SAY WHAT NEVER GOT SAID.</h3></div></header><label>Write directly to them.<textarea name="unsaid" class="nlw-large" placeholder="I need you to know..."></textarea></label><label>What are you angry about, including the parts that feel unfair to admit?<textarea name="anger" placeholder="I am angry because..."></textarea></label></article>
-      <article class="nlw-step" data-step="4"><header><span>04</span><div><p>SEPARATE LOVE FROM BLAME</p><h3>WHAT ARE YOU PUNISHING YOURSELF FOR?</h3></div></header><label>The guilt or regret I keep replaying is...<textarea name="guilt" placeholder="I keep thinking that if I had..."></textarea></label><label>What would they say if they could answer you honestly, without cruelty?<textarea name="reply" placeholder="I think they would tell me..."></textarea></label></article>
-      <article class="nlw-step" data-step="5"><header><span>05</span><div><p>CARRY FORWARD</p><h3>WHAT DOES THE LOVE BECOME NOW?</h3></div></header><label>Name one thing from them that still lives through you.<textarea name="legacy" placeholder="Because they were here, I carry..."></textarea></label><label>Choose one act of remembrance that belongs in your actual life.<textarea name="act" placeholder="I will remember them by..."></textarea></label></article>
-      <div class="nlw-controls"><button type="button" id="nlw-save">SAVE LOCALLY</button><button type="button" id="nlw-export">EXPORT LETTER</button><button type="button" id="nlw-print">PRINT / PDF</button><button type="button" id="nlw-reset" class="danger">ERASE</button><span id="nlw-save-state" role="status">NOT STARTED</span></div>
+      <article class="nlw-step" data-step="1"><header><span>01</span><div><p>NAME THE LOSS</p><h3>WHAT HAPPENED?</h3></div></header><label>Tell the truth of the loss in your own words.<textarea name="loss" autocomplete="off" placeholder="What happened, who did you lose and what changed when they were gone?"></textarea></label><label>What part still feels impossible to accept?<textarea name="acceptance" autocomplete="off" placeholder="The part my mind keeps fighting is..."></textarea></label></article>
+      <article class="nlw-step" data-step="2"><header><span>02</span><div><p>THE LAST REAL MOMENT</p><h3>WHAT DO YOU REMEMBER?</h3></div></header><label>Write the last moment you remember with them.<textarea name="lastMoment" autocomplete="off" placeholder="Where were you? What was ordinary about it? What do you notice now that you did not notice then?"></textarea></label><label>What do you wish you had understood in that moment?<textarea name="understood" autocomplete="off" placeholder="I wish I knew..."></textarea></label></article>
+      <article class="nlw-step" data-step="3"><header><span>03</span><div><p>NO EDITING. NO POLISH.</p><h3>SAY WHAT NEVER GOT SAID.</h3></div></header><label>Write directly to them.<textarea name="unsaid" class="nlw-large" autocomplete="off" placeholder="I need you to know..."></textarea></label><label>What are you angry about, including the parts that feel unfair to admit?<textarea name="anger" autocomplete="off" placeholder="I am angry because..."></textarea></label></article>
+      <article class="nlw-step" data-step="4"><header><span>04</span><div><p>SEPARATE LOVE FROM BLAME</p><h3>WHAT ARE YOU PUNISHING YOURSELF FOR?</h3></div></header><label>The guilt or regret I keep replaying is...<textarea name="guilt" autocomplete="off" placeholder="I keep thinking that if I had..."></textarea></label><label>What would they say if they could answer you honestly, without cruelty?<textarea name="reply" autocomplete="off" placeholder="I think they would tell me..."></textarea></label></article>
+      <article class="nlw-step" data-step="5"><header><span>05</span><div><p>CARRY FORWARD</p><h3>WHAT DOES THE LOVE BECOME NOW?</h3></div></header><label>Name one thing from them that still lives through you.<textarea name="legacy" autocomplete="off" placeholder="Because they were here, I carry..."></textarea></label><label>Choose one act of remembrance that belongs in your actual life.<textarea name="act" autocomplete="off" placeholder="I will remember them by..."></textarea></label></article>
+      <div class="nlw-controls"><button type="button" id="nlw-save">SAVE LOCALLY</button><button type="button" id="nlw-export">EXPORT LETTER</button><button type="button" id="nlw-print">PRINT / PDF</button><button type="button" id="nlw-reset" class="danger">ERASE</button><span id="nlw-save-state" role="status" aria-live="polite">NOT STARTED</span></div>
     </form>
   </section>
 
@@ -78,7 +81,7 @@
 
   <section class="nlw-closing"><p>THEY MAY BE GONE.</p><h2>THE LOVE IS NOT.</h2><p>This page is not therapy, crisis care or a replacement for human support. Stop when the work becomes too much. Return when you have more ground beneath you.</p></section>
 </main>
-<footer><div class="footer-brand"><div class="brand-mark"><span>B</span></div>BURKEONIS</div><span>© 2026 BURKEONIS. ALL RIGHTS RESERVED.</span><a href="#top">TOP ↑</a></footer>
+<footer><div class="footer-brand"><div class="brand-mark" aria-hidden="true"><span>B</span></div>BURKEONIS</div><span>© 2026 BURKEONIS. ALL RIGHTS RESERVED.</span><a href="#top">TOP ↑</a></footer>
 <script src="no-last-words.js" defer></script>
 </body>
 </html>

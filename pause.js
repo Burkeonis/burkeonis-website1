@@ -25,7 +25,7 @@
   document.getElementById('openMirror').addEventListener('click', () => {
     const value = input.value.trim();
     if (value) sessionStorage.setItem('selfMirrorDraft', value);
-    location.href = 'self-mirror?source=pause';
+    location.href = '/self-mirror?source=pause';
   });
 
   document.getElementById('delayBtn').addEventListener('click', () => {

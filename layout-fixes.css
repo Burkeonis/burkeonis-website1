@@ -1,0 +1,91 @@
+/* BURKEONIS SITE-WIDE LAYOUT FIXES */
+html{overflow-x:hidden}
+body{overflow-x:hidden;line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+img,svg,video,iframe{max-width:100%;height:auto}
+main,section,article,header,footer{min-width:0}
+p,li,blockquote{overflow-wrap:anywhere}
+h1,h2,h3{overflow-wrap:normal;word-break:normal;text-wrap:balance}
+p{max-width:72ch;text-wrap:pretty}
+
+/* Shared page rhythm */
+.inner-main,.protocol-main,.mirror-shell,.song-story{width:min(100%,1280px);margin-inline:auto}
+.page-hero{width:min(100%,1280px);margin-inline:auto;padding:clamp(64px,9vw,120px) clamp(20px,5vw,72px) clamp(44px,7vw,84px)}
+.page-hero h1{max-width:1050px;margin:20px 0 28px;line-height:.9}
+.page-hero>p:last-child{max-width:760px;margin-bottom:0;font-size:clamp(16px,1.8vw,19px);line-height:1.75}
+section+section{scroll-margin-top:110px}
+
+/* Header and navigation */
+.site-header,.inner-nav{position:relative;z-index:20}
+.site-header nav,.inner-nav nav{min-width:0;align-items:center}
+.site-header nav a,.inner-nav nav a{white-space:nowrap}
+.brand{min-width:0}
+.header-entry{white-space:nowrap;text-align:center;justify-content:center}
+
+/* General headings and copy */
+h1{line-height:.88}
+h2{line-height:.96}
+h3{line-height:1.05}
+.red-label,.eyebrow,.protocol-code,.project-type,.record-code,.record-state{line-height:1.5}
+.hero-copy,.about-story>p,.mission-copy p,.section-intro p,.music-intro>p,.project>p,.tool-card p,.protocol-card p{max-width:68ch}
+
+/* Buttons and actions */
+.primary-entry,.secondary-entry,.tool-action,.protocol-actions a,.mirror-entry a,.header-entry{line-height:1.25}
+.hero-actions,.protocol-actions,.mirror-actions{align-items:stretch}
+.protocol-actions a,.tool-action{display:flex;align-items:center;justify-content:center;text-align:center;min-height:50px}
+
+/* Cards and grids */
+.protocol-grid,.tool-grid,.coming-grid{align-items:stretch}
+.protocol-card,.tool-card,.coming-card{min-width:0}
+.protocol-card h2,.tool-card h3,.coming-card h3{max-width:100%}
+.project{min-width:0}
+.project>*{min-width:0}
+
+/* Footer */
+footer>*{min-width:0}
+footer span{text-align:center;line-height:1.6}
+
+@media(max-width:1100px){
+  .site-header{grid-template-columns:minmax(0,1fr) auto;gap:18px}
+  .site-header nav{grid-column:1/-1;grid-row:2;justify-content:flex-start;overflow-x:auto;overscroll-behavior-inline:contain;padding-bottom:6px;scrollbar-width:thin}
+  .protocol-grid,.tool-grid,.coming-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+@media(max-width:760px){
+  .site-header,.inner-nav{padding-inline:16px}
+  .site-header{gap:12px}
+  .site-header nav,.inner-nav nav{gap:20px}
+  .site-header nav a,.inner-nav nav a{font-size:11px;letter-spacing:.12em}
+  .brand{font-size:15px;letter-spacing:.18em}
+  .header-entry{padding:12px 14px;min-height:44px}
+  .hero-content{margin-inline:16px;width:calc(100% - 32px);padding:46px 22px 42px}
+  .hero-content h1{font-size:clamp(42px,13vw,62px);line-height:.92}
+  .hero-copy{font-size:16px;line-height:1.72}
+  .eyebrow{line-height:1.55;margin-bottom:24px}
+  .page-hero{padding:58px 20px 42px}
+  .page-hero h1{font-size:clamp(44px,13vw,72px);line-height:.9}
+  .protocol-main,.mirror-shell,.song-story{padding-left:18px!important;padding-right:18px!important}
+  .protocol-grid,.tool-grid,.coming-grid{grid-template-columns:1fr!important;gap:16px!important}
+  .protocol-card,.tool-card,.coming-card{min-height:0!important;padding:24px!important}
+  .protocol-card h2,.tool-card h3,.coming-card h3{font-size:clamp(34px,10vw,48px)!important;line-height:.95!important;margin:16px 0 14px!important}
+  .protocol-actions{display:grid!important;grid-template-columns:1fr!important;width:100%}
+  .protocol-actions a{width:100%;padding:14px 16px}
+  .mirror-entry{display:block!important;padding:24px!important}
+  .mirror-entry h2{font-size:clamp(30px,9vw,40px)!important;line-height:1!important}
+  .mirror-entry a{display:flex!important;width:100%;margin-top:20px!important;white-space:normal!important;text-align:center;justify-content:center}
+  .record-head,.story-deck,.section-intro,.music-intro,.about-grid,.mission-grid{grid-template-columns:1fr!important;gap:28px!important}
+  .record-summary{margin-left:0!important}
+  .project{grid-template-columns:36px minmax(0,1fr) 24px!important;gap:12px!important;padding:24px 12px!important}
+  .project h3{font-size:clamp(27px,8vw,38px)!important;line-height:1!important}
+  .project>p{display:none}
+  footer{grid-template-columns:1fr!important;text-align:center;justify-items:center;gap:16px;padding:30px 18px}
+  footer>a:last-child{justify-self:center!important}
+}
+
+@media(max-width:420px){
+  .site-header nav,.inner-nav nav{gap:16px}
+  .brand-mark{flex:0 0 auto}
+  .hero-content h1,.page-hero h1{letter-spacing:-.025em}
+  .motto{line-height:1.8}
+  .section-kicker{gap:16px;align-items:flex-start}
+  .section-kicker span:last-child{text-align:right}
+}

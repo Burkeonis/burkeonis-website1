@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="/favicon.ico" rel="icon" type="image/x-icon"/>
+<link href="/assets/icons/favicon-32x32.png" rel="icon" sizes="32x32" type="image/png"/>
+<link href="/assets/icons/favicon-16x16.png" rel="icon" sizes="16x16" type="image/png"/>
+<link href="/assets/icons/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180"/>
+<link href="/site.webmanifest" rel="manifest"/>
+<meta content="Your Self Mirror payment was cancelled and no charge was completed." name="description"/><link href="https://burkeonis.com/cancel" rel="canonical"/><meta content="website" property="og:type"/><meta content="https://burkeonis.com/cancel" property="og:url"/><meta content="Payment Cancelled | Self Mirror" property="og:title"/><meta content="Your Self Mirror payment was cancelled and no charge was completed." property="og:description"/><meta content="https://burkeonis.com/assets/burkeonis-hero.webp" property="og:image"/><meta content="Burkeonis" property="og:site_name"/><meta content="summary_large_image" name="twitter:card"/><meta content="Payment Cancelled | Self Mirror" name="twitter:title"/><meta content="Your Self Mirror payment was cancelled and no charge was completed." name="twitter:description"/><meta content="https://burkeonis.com/assets/burkeonis-hero.webp" name="twitter:image"/>
+<title>Payment Cancelled | Self Mirror</title>
+<style>
+        :root {
+            color-scheme: dark;
+            --background: #0b0b0b;
+            --surface: #131313;
+            --surface-border: #303030;
+            --primary-text: #f4f4f4;
+            --secondary-text: #bcbcbc;
+            --muted-text: #858585;
+            --button-background: #f4f4f4;
+            --button-text: #111111;
+            --button-hover: #d8d8d8;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background:
+                radial-gradient(circle at top, #1b1b1b 0%, var(--background) 55%);
+            color: var(--primary-text);
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.7;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 720px;
+            padding: 48px 36px;
+            background: rgba(19, 19, 19, 0.94);
+            border: 1px solid var(--surface-border);
+            border-radius: 18px;
+            text-align: center;
+            box-shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
+        }
+
+        .status {
+            display: inline-block;
+            margin-bottom: 18px;
+            padding: 7px 14px;
+            border: 1px solid #444;
+            border-radius: 999px;
+            color: var(--secondary-text);
+            font-size: 0.8rem;
+            font-weight: bold;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            margin: 0 0 18px;
+            font-size: clamp(2.2rem, 7vw, 3.5rem);
+            line-height: 1.1;
+        }
+
+        p {
+            max-width: 590px;
+            margin: 14px auto;
+            color: var(--secondary-text);
+        }
+
+        .notice {
+            margin-top: 26px;
+            padding: 18px;
+            background: #0f0f0f;
+            border: 1px solid #292929;
+            border-radius: 10px;
+            color: var(--muted-text);
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-top: 32px;
+        }
+
+        .button {
+            display: inline-block;
+            min-width: 190px;
+            padding: 14px 24px;
+            border: 1px solid var(--button-background);
+            border-radius: 8px;
+            background: var(--button-background);
+            color: var(--button-text);
+            font-weight: bold;
+            text-decoration: none;
+            transition:
+                background 0.2s ease,
+                color 0.2s ease,
+                transform 0.2s ease;
+        }
+
+        .button:hover,
+        .button:focus-visible {
+            background: var(--button-hover);
+            transform: translateY(-2px);
+        }
+
+        .button-secondary {
+            background: transparent;
+            color: var(--primary-text);
+            border-color: #555;
+        }
+
+        .button-secondary:hover,
+        .button-secondary:focus-visible {
+            background: #242424;
+            color: var(--primary-text);
+        }
+
+        footer {
+            margin-top: 38px;
+            color: var(--muted-text);
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 520px) {
+            .card {
+                padding: 38px 22px;
+            }
+
+            .button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<main class="card">
+<div class="status">Checkout Cancelled</div>
+<h1>No payment was completed.</h1>
+<p>
+            You left the Self Mirror checkout before completing your purchase.
+            Your membership has not been activated.
+        </p>
+<div class="notice">
+            You should not be charged for a cancelled checkout. A temporary
+            authorization may occasionally appear depending on your bank, but
+            it should disappear automatically if the payment was not completed.
+        </div>
+<p>
+            You can return to Self Mirror now or revisit the membership page
+            whenever you are ready.
+        </p>
+<div class="actions">
+<a class="button" href="/">
+                Return to Self Mirror
+            </a>
+<a class="button button-secondary" href="/pricing">
+                View Membership Options
+            </a>
+</div>
+<footer>
+            © 2026 Burkeonis · Self Mirror
+        </footer>
+</main>
+</body>
+</html>

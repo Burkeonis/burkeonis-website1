@@ -1,17 +1,18 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="Burkeonis Pause creates space between the trigger and the next decision.">
-<meta name="theme-color" content="#1b1d1e">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Pause">
-<link rel="manifest" href="site.webmanifest">
-<link rel="apple-touch-icon" href="assets/icons/icon-192.png">
-<link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="layout-fixes.css">
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
+<meta content="Burkeonis Pause creates space between the trigger and the next decision." name="description"/><link href="https://burkeonis.com/pause" rel="canonical"/><meta content="website" property="og:type"/><meta content="https://burkeonis.com/pause" property="og:url"/><meta content="Pause | Burkeonis" property="og:title"/><meta content="Burkeonis Pause creates space between the trigger and the next decision." property="og:description"/><meta content="https://burkeonis.com/assets/burkeonis-hero.webp" property="og:image"/><meta content="Burkeonis" property="og:site_name"/><meta content="summary_large_image" name="twitter:card"/><meta content="Pause | Burkeonis" name="twitter:title"/><meta content="Burkeonis Pause creates space between the trigger and the next decision." name="twitter:description"/><meta content="https://burkeonis.com/assets/burkeonis-hero.webp" name="twitter:image"/>
+<meta content="#1b1d1e" name="theme-color"/>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
+<meta content="Pause" name="apple-mobile-web-app-title"/>
+<link href="site.webmanifest" rel="manifest"/>
+<link href="assets/icons/icon-192.png" rel="apple-touch-icon"/>
+<link href="style.css" rel="stylesheet"/>
+<link href="layout-fixes.css" rel="stylesheet"/>
 <title>Pause | Burkeonis</title>
 <style>
 .pause-page{min-height:100svh;background:radial-gradient(circle at 50% 0,rgba(167,79,56,.18),transparent 34%),#17191a;color:#f1ede5;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
@@ -39,32 +40,32 @@
 <p class="pause-lead">You do not need to solve your life right now. You need enough distance to avoid making the next minute worse.</p>
 <section class="pause-card">
 <h2>WHAT IS HAPPENING?</h2>
-<div class="state-grid" role="group" aria-label="Current state">
+<div aria-label="Current state" class="state-grid" role="group">
 <button class="state-btn" data-state="anger">I'M ANGRY<small>I want to send, confront, punish, or explode.</small></button>
 <button class="state-btn" data-state="panic">I'M PANICKING<small>My body is racing and everything feels urgent.</small></button>
 <button class="state-btn" data-state="numb">I'M NUMB<small>I want to disappear, shut down, or escape.</small></button>
 <button class="state-btn" data-state="impulse">I'M ABOUT TO ACT<small>I need a barrier between the urge and the action.</small></button>
 </div>
-<div class="pause-step" aria-live="polite"><strong id="stepLabel">FIRST MOVE</strong><p id="stepText">Choose the state closest to what is happening.</p></div>
+<div aria-live="polite" class="pause-step"><strong id="stepLabel">FIRST MOVE</strong><p id="stepText">Choose the state closest to what is happening.</p></div>
 <label class="mirror-label" for="pauseInput">WHAT JUST HAPPENED?</label>
-<textarea id="pauseInput" class="pause-text" placeholder="One sentence. Facts first. What happened immediately before this feeling?"></textarea>
+<textarea class="pause-text" id="pauseInput" placeholder="One sentence. Facts first. What happened immediately before this feeling?"></textarea>
 <div class="pause-actions">
-<button id="openMirror" class="pause-action">TAKE THIS TO SELF MIRROR</button>
-<button id="delayBtn" class="pause-action secondary">START 90-SECOND DELAY</button>
+<button class="pause-action" id="openMirror">TAKE THIS TO SELF MIRROR</button>
+<button class="pause-action secondary" id="delayBtn">START 90-SECOND DELAY</button>
 </div>
-<p id="timerStatus" class="mirror-status" aria-live="polite">NO TIMER RUNNING</p>
+<p aria-live="polite" class="mirror-status" id="timerStatus">NO TIMER RUNNING</p>
 </section>
 <section class="install-box">
 <h3>PUT PAUSE ON YOUR PHONE</h3>
 <p>Install Burkeonis so this screen opens from your home screen without navigating through the website.</p>
 <button id="installBtn" type="button">INSTALL / ADD QUICK ACCESS</button>
-<ol id="iosSteps" class="install-steps" hidden>
+<ol class="install-steps" hidden="" id="iosSteps">
 <li>Open this page in Safari.</li>
 <li>Tap the Share button.</li>
 <li>Choose <strong>Add to Home Screen</strong>.</li>
 <li>Name it <strong>Pause</strong>, then tap Add.</li>
 </ol>
-<p id="installStatus" class="mirror-status">INSTALLATION OPTIONS DEPEND ON YOUR PHONE AND BROWSER.</p>
+<p class="mirror-status" id="installStatus">INSTALLATION OPTIONS DEPEND ON YOUR PHONE AND BROWSER.</p>
 </section>
 <p class="pause-note">Pause is a reflection and regulation tool. It is not emergency or crisis response. If there is immediate danger, contact local emergency services or a trusted person who can be physically present.</p>
 </main>

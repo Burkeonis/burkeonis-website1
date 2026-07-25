@@ -49,7 +49,7 @@
   copy.style.margin = '0';
 
   const link = document.createElement('a');
-  link.href = 'pricing.html';
+  link.href = '/pricing';
   link.textContent = 'COMPARE ATLAS MEMBERSHIPS →';
   link.style.cssText = 'display:inline-block;margin-top:12px;color:#e19876;font:700 11px Courier New,monospace;letter-spacing:.1em';
 

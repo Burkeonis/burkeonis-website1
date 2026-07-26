@@ -1,2 +1,3 @@
 /apps                 /atlas 301
 /apps.html            /atlas 301
+/atlas/*              /atlas/index.html 200

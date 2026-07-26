@@ -1,2 +1,43 @@
-/apps                 /atlas 301
-/apps.html            /atlas 301
+# Burkeonis — Cloudflare Pages redirect rules
+# Format: source  destination  status
+# All rules are single-hop 301s. No chains. No loops.
+# Cloudflare Pages evaluates rules top-to-bottom; first match wins.
+
+# -------------------------------------------------------
+# 1. Remove .html extension — clean canonical URLs
+# -------------------------------------------------------
+/index.html             /                   301
+/self-mirror.html       /self-mirror        301
+/misophonia.html        /misophonia         301
+/no-last-words.html     /no-last-words      301
+/music.html             /music              301
+/pricing.html           /pricing            301
+/about.html             /about              301
+/tools.html             /tools              301
+/shadow-work.html       /shadow-work        301
+/start-here.html        /start-here         301
+/updates.html           /updates            301
+/rad.html               /rad                301
+
+# -------------------------------------------------------
+# 2. Legacy /apps route → /atlas
+# -------------------------------------------------------
+/apps.html              /atlas              301
+/apps                   /atlas              301
+
+# -------------------------------------------------------
+# 3. Normalise /atlas directory variants
+# -------------------------------------------------------
+/atlas/                 /atlas              301
+/atlas/atlas            /atlas              301
+
+# -------------------------------------------------------
+# 4. /atlas/* sub-routes that belong at root level
+# -------------------------------------------------------
+/atlas/self-mirror      /self-mirror        301
+/atlas/misophonia       /misophonia         301
+/atlas/no-last-words    /no-last-words      301
+/atlas/music            /music              301
+/atlas/pricing          /pricing            301
+/atlas/about            /about              301
+/atlas/tools            /tools              301

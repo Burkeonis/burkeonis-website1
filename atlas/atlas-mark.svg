@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
-  <title id="title">Burkeonis Atlas mark</title>
-  <rect width="512" height="512" rx="72" fill="#0B0C10"/>
-  <circle cx="256" cy="256" r="166" fill="none" stroke="#C85A32" stroke-width="18"/>
-  <path d="M256 92 388 358H124Z" fill="none" stroke="#E2DFD8" stroke-width="16"/>
-  <circle cx="256" cy="256" r="46" fill="#3B8276"/>
-  <path d="M256 130v252M130 256h252" stroke="#8A909C" stroke-width="8" opacity=".65"/>
-</svg>

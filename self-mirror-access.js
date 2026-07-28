@@ -50,7 +50,7 @@
 
   const link = document.createElement('a');
   link.href = '/pricing';
-  link.textContent = 'COMPARE ATLAS MEMBERSHIPS →';
+  link.textContent = 'COMPARE SELF MIRROR MEMBERSHIPS →';
   link.style.cssText = 'display:inline-block;margin-top:12px;color:#e19876;font:700 11px Courier New,monospace;letter-spacing:.1em';
 
   notice.append(heading, copy, link);
@@ -59,8 +59,8 @@
   function refreshNotice() {
     const remaining = remainingText();
     copy.textContent = remaining > 0
-      ? `${remaining} of ${DAILY_LIMIT} browser-only reflections remain today. Full history, memory, timeline, advanced analysis and connected progress belong inside Atlas.`
-      : 'Today’s public preview is complete. Full history, memory, timeline, advanced analysis and connected progress belong inside Atlas.';
+      ? `${remaining} of ${DAILY_LIMIT} browser-only reflections remain today. Full history, memory, timeline, advanced analysis and connected progress are being built into Self Mirror.`
+      : 'Today’s public preview is complete. Full history, memory, timeline, advanced analysis and connected progress are being built into Self Mirror.';
 
     if (remaining === 0) {
       analyzeButton.disabled = true;

@@ -20,24 +20,13 @@
 /rad.html               /rad                301
 
 # -------------------------------------------------------
-# 2. Legacy /apps route → /atlas
+# 2. Keep the apps index available
 # -------------------------------------------------------
-/apps.html              /atlas              301
-/apps                   /atlas              301
+/apps.html              /apps               301
 
 # -------------------------------------------------------
-# 3. Normalise /atlas directory variants
+# 3. Retire Atlas into Self Mirror
 # -------------------------------------------------------
-/atlas/                 /atlas              301
-/atlas/atlas            /atlas              301
-
-# -------------------------------------------------------
-# 4. /atlas/* sub-routes that belong at root level
-# -------------------------------------------------------
-/atlas/self-mirror      /self-mirror        301
-/atlas/misophonia       /misophonia         301
-/atlas/no-last-words    /no-last-words      301
-/atlas/music            /music              301
-/atlas/pricing          /pricing            301
-/atlas/about            /about              301
-/atlas/tools            /tools              301
+/atlas                  /self-mirror        301
+/atlas/                 /self-mirror        301
+/atlas/*                /self-mirror        301

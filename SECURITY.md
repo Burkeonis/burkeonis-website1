@@ -15,7 +15,7 @@ Burkeonis handles private reflection, grief, relationship, recovery, and creativ
 
 ## Payment and membership release blockers
 
-Paid access must not be implemented by hiding links or trusting browser storage. Before live sales begin, the Atlas backend must provide all of the following:
+Paid access must not be implemented by hiding links or trusting browser storage. Before live sales begin, the Self Mirror backend must provide all of the following:
 
 1. Stripe Checkout Sessions created server-side.
 2. Stripe webhook signature verification using the raw request body.

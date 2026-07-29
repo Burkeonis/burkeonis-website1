@@ -35,11 +35,24 @@ body { background: var(--home-black); }
 .home-hero .hero-art {
   position: absolute;
   inset: 0;
+  z-index: 0;
   background-image: url("/public/burkeonis-hero.png");
   background-position: center right;
   background-repeat: no-repeat;
   background-size: cover;
   filter: contrast(1.08) saturate(.95);
+}
+
+/* Override the shared section wrapper used by the older site. */
+main > .home-truth,
+main > .home-paths,
+main > .home-mirror,
+main > .home-last-words,
+main > .home-use-it,
+main > .home-closing {
+  width: 100%;
+  max-width: none;
+  margin: 0;
 }
 .home-hero-shade {
   position: absolute;

@@ -1,32 +1,22 @@
-# Burkeonis — Cloudflare Pages redirect rules
-# Format: source  destination  status
-# All rules are single-hop 301s. No chains. No loops.
-# Cloudflare Pages evaluates rules top-to-bottom; first match wins.
+/index.html           /                 301
+/music.html           /music            301
+/tools.html           /tools            301
+/shadow-work.html     /shadow-work      301
+/misophonia.html      /misophonia       301
+/about.html           /about            301
+/self-mirror.html     /self-mirror      301
+/no-last-words.html   /no-last-words    301
+/pricing.html         /pricing          301
+/start-here.html      /start-here       301
+/updates.html         /updates          301
+/rad.html             /rad              301
 
-# -------------------------------------------------------
-# 1. Remove .html extension — clean canonical URLs
-# -------------------------------------------------------
-/index.html             /                   301
-/self-mirror.html       /self-mirror        301
-/misophonia.html        /misophonia         301
-/no-last-words.html     /no-last-words      301
-/music.html             /music              301
-/pricing.html           /pricing            301
-/about.html             /about              301
-/tools.html             /tools              301
-/shadow-work.html       /shadow-work        301
-/start-here.html        /start-here         301
-/updates.html           /updates            301
-/rad.html               /rad                301
-
-# -------------------------------------------------------
-# 2. Keep the apps index available
-# -------------------------------------------------------
-/apps.html              /apps               301
-
-# -------------------------------------------------------
-# 3. Retire Atlas into Self Mirror
-# -------------------------------------------------------
-/atlas                  /self-mirror        301
-/atlas/                 /self-mirror        301
-/atlas/*                /self-mirror        301
+/apps                 /self-mirror      301
+/apps/                /self-mirror      301
+/apps.html            /self-mirror      301
+/atlas                /self-mirror      301
+/atlas/               /self-mirror      301
+/atlas.html           /self-mirror      301
+/atlas/*              /self-mirror      301
+/sigil-foundry        /tools            301
+/sigil-foundry.html   /tools            301

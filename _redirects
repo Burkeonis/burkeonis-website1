@@ -1,2 +1,20 @@
-/apps                 /atlas 301
-/apps.html            /atlas 301
+/index.html           /                 301
+/music.html           /music            301
+/tools.html           /tools            301
+/shadow-work.html     /shadow-work      301
+/misophonia.html      /misophonia       301
+/about.html           /about            301
+/self-mirror.html     /self-mirror      301
+/no-last-words.html   /no-last-words    301
+/pricing.html         /pricing          301
+/start-here.html      /start-here       301
+/updates.html         /updates          301
+/rad.html             /rad              301
+
+/apps                 /self-mirror      301
+/apps/                /self-mirror      301
+/apps.html            /self-mirror      301
+/atlas                /self-mirror      301
+/atlas/               /self-mirror      301
+/atlas.html           /self-mirror      301
+/atlas/*              /self-mirror      301

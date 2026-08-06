@@ -22,7 +22,7 @@ export const Header: React.FC = () => {
         <nav className="hidden md:flex gap-4 text-xs tracking-[0.18em] uppercase">
           <NavLink to="/" className="hover:text-ember">Home</NavLink>
           <NavLink to="/music" className="hover:text-ember">Music</NavLink>
-          <NavLink to="/apps" className="hover:text-ember">Apps</NavLink>
+          <NavLink to="/self-mirror" className="hover:text-ember">Self Mirror</NavLink>
           <NavLink to="/tools" className="hover:text-ember">Tools</NavLink>
           <NavLink to="/shadow-work" className="hover:text-ember">Shadow Work</NavLink>
           <NavLink to="/about" className="hover:text-ember">About</NavLink>

@@ -54,9 +54,56 @@
   const uploadZone = document.getElementById('uploadZone');
   const modeExplainer = document.getElementById('modeExplainer');
   const readableTextTypes = ['text/plain', 'text/markdown', 'application/json', 'text/csv'];
-  const sentences = (text) => text.split(/(?<=[.!?])\s+/).map((sentence) => sentence.trim()).filter(Boolean);
+  const sentences = (text) => text
+    .replace(/^--- SOURCE[^\n]*---$/gim, ' ')
+    .split(/(?<=[.!?])\s+|\n+/)
+    .map((sentence) => sentence.replace(/\s+/g, ' ').trim())
+    .filter((sentence) => sentence.length > 12);
+  const clip = (value, limit = 240) => value.length > limit ? `${value.slice(0, limit).trim()}…` : value;
+  const unique = (items) => [...new Set(items.map((item) => item.trim()).filter(Boolean))];
 
-  function buildMediator(text) {
+  function selectAcrossAccount(items, count = 6) {
+    if (items.length <= count) return items;
+    return unique(Array.from({ length: count }, (_, index) => String(Math.round(index * (items.length - 1) / (count - 1)))))
+      .map(Number).map((index) => items[index]);
+  }
+
+  function collectMatches(items, pattern, limit = 5) {
+    return unique(items.filter((item) => pattern.test(item))).slice(0, limit);
+  }
+
+  function analyzeAccount(text) {
+    const allSentences = sentences(text);
+    const sourceMatches = [...text.matchAll(/^--- SOURCE\s+\d+:\s*(.+?)\s*---$/gim)];
+    const costMap = [
+      ['TRUST', /\btrust|lie|lied|betray|honest/i], ['HOME', /\bhome|house|room|mess|chaos|belonging|stuff|moved/i],
+      ['RELATIONSHIP', /\brelationship|partner|girlfriend|boyfriend|wife|husband|stranger|love|intimacy/i],
+      ['FAMILY', /\bchild|children|kid|son|daughter|family/i], ['HEALTH', /\bhealth|sleep|body|drug|high|sober|pain|anxiety/i],
+      ['MONEY', /\bmoney|rent|bill|paid|cost|debt|buy|bought/i], ['WORK', /\bwork|job|business|client|career/i],
+      ['TIME', /\btime|hour|day|week|month|year|future/i],
+    ];
+    return {
+      allSentences,
+      representative: selectAcrossAccount(allSentences),
+      evidence: collectMatches(allSentences, /\b(said|wrote|texted|sent|called|left|moved|paid|bought|took|gave|record|photo|video|receipt|date|timestamp|message|screenshot)\b/i, 6),
+      interpretations: collectMatches(allSentences, /\b(i think|i feel like|probably|maybe|obviously|clearly|must|wanted to|meant to|doesn't care|does not care|on purpose|trying to)\b/i),
+      ownership: collectMatches(allSentences, /\b(i said|i did|i chose|i lied|i avoided|i ignored|i threatened|i left|i stayed|i took|i yelled|i screamed|i refused|i kept)\b/i),
+      needs: collectMatches(allSentences, /\b(i need|i want|i asked|i expect|boundary|respect|trust|safe|space|order|honest|love)\b/i),
+      escalation: collectMatches(allSentences, /\b(yell|scream|threat|insult|block|fight|rage|hit|push|break|fuck you|shut up|always|never)\b/i),
+      costs: costMap.filter(([, pattern]) => pattern.test(text)).map(([label]) => label),
+      wordCount: text.trim().split(/\s+/).filter(Boolean).length,
+      charCount: text.length,
+      sources: sourceMatches.map((match) => match[1].trim()),
+    };
+  }
+
+  function bulletList(items, fallback, limit = 5) {
+    return items.length ? items.slice(0, limit).map((item) => `• ${clip(item)}`).join('\n') : fallback;
+  }
+
+  const accountSummary = (analysis) => bulletList(analysis.representative, 'Not enough readable material was found to summarize the account.', 6);
+
+  function buildMediator(text, analysis) {
     const lines = text.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
     const speakerMap = new Map();
     const quotes = [];
@@ -80,9 +127,13 @@
       : 'No reliable speaker labels were detected. Label transcript lines as “Name: message” to separate contributions.';
     return `MEDIATOR MODE
 
-EVIDENCE RECEIVED
-${lines.length} non-empty line(s) were examined from the combined account and uploaded evidence.
+FULL ACCOUNT CHECK
+${analysis.wordCount} words / ${analysis.charCount} characters / ${analysis.allSentences.length} readable statements examined.
+${analysis.sources.length ? `${analysis.sources.length} uploaded source(s): ${analysis.sources.join(', ')}` : 'No labelled uploaded sources. The written account was examined in full.'}
 ${speakers.length} explicitly labelled speaker(s) detected.
+
+WHAT YOU BROUGHT IN
+${accountSummary(analysis)}
 
 DIRECTLY ATTRIBUTED MATERIAL
 ${quotes.length ? quotes.slice(0, 10).join('\n') : 'No direct speaker attribution detected. Do not assign statements to a person without labels or visible evidence.'}
@@ -102,7 +153,10 @@ What happened immediately before the first escalation? What exact request or bou
 NO FALSE BALANCE
 Both people can contribute differently. Do not force equal blame. Separate initiating harm, reaction, retaliation, repair attempts, and repeated behaviour.
 
-NEXT MOVE
+YOUR CONTROLLABLE PART
+${bulletList(analysis.ownership, 'Your exact words and actions are not clearly named. Add them before assigning a complete pattern.', 4)}
+
+ONE MOVE
 Write one neutral timeline using only observable actions. Then choose one: clarify, repair, set a boundary, pause contact, or end the loop.`;
   }
 
@@ -220,20 +274,27 @@ Write one neutral timeline using only observable actions. Then choose one: clari
   }
 
   function build(text) {
-    const lines = sentences(text);
+    const analysis = analyzeAccount(text);
     const absolutes = text.match(/\b(always|never|everyone|nobody|everything|nothing|every time)\b/gi) || [];
     const blame = text.match(/\b(made me|forced me|because of them|their fault|had no choice)\b/gi) || [];
-    const uncertainty = text.match(/\b(maybe|probably|I think|I guess|seems|must have)\b/gi) || [];
-    const ownership = text.match(/\b(I said|I did|I chose|I lied|I avoided|I ignored|I threatened|I left|I stayed)\b/gi) || [];
-    const fact = lines[0] || text.slice(0, 180);
     if (mode === 'mediator') {
-      return buildMediator(text);
+      return buildMediator(text, analysis);
     }
     if (mode === 'abyss') {
       return `ABYSS MODE
 
-THE STORY YOU CAN ALREADY EXPLAIN
-${fact}
+FULL ACCOUNT CHECK
+${analysis.wordCount} words / ${analysis.charCount} characters / ${analysis.allSentences.length} readable statements examined.
+${analysis.sources.length ? `${analysis.sources.length} uploaded source(s) included.` : 'Written account examined in full.'}
+
+WHAT YOU BROUGHT IN
+${accountSummary(analysis)}
+
+WHAT THE MATERIAL SUPPORTS
+${bulletList(analysis.evidence, 'The account contains claims but little independently checkable evidence. That limits certainty; it does not automatically make the account false.')}
+
+WHAT IS INTERPRETATION
+${bulletList(analysis.interpretations, 'No obvious motive claims were detected. Missing context still remains missing.', 4)}
 
 THE PART YOUR STORY PROTECTS
 ${blame.length ? `External-control language appeared ${blame.length} time(s). What happened to you matters. It still cannot make your next choice for you.` : 'Your account may be accurate and still incomplete. Accuracy about their behaviour is not evidence that you have faced your own.'}
@@ -252,10 +313,10 @@ THE REHEARSAL
 Where have you rebuilt this same emotional ending with different people, different details, and the same role for yourself?
 
 THE CONTRADICTION
-What do you say you want that your repeated choices are designed to prevent?
+${analysis.needs.length ? `You say you need or value:\n${bulletList(analysis.needs, '', 3)}\nWhich repeated choice makes that outcome less likely?` : 'What do you say you want that your repeated choices are designed to prevent?'}
 
 THE COST LEDGER
-What has this pattern taken from your body, children, relationships, work, dignity, time, and future? Name only costs you can defend with evidence.
+${analysis.costs.length ? `The account points to possible costs involving: ${analysis.costs.join(', ')}. Name only the costs you can defend with evidence.` : 'Name what this pattern has taken using only costs you can defend with evidence.'}
 
 THE TRUTH THAT COLLAPSES THE EXCUSE
 Write the sentence you would hate to hear from someone who knows the entire story—including your part.
@@ -264,10 +325,10 @@ THE LINE BETWEEN EXPLANATION AND PERMISSION
 Your history may explain the reflex. It does not grant the reflex permanent authority.
 
 ONE CUT
-Name one behaviour that keeps the pattern alive. Stop feeding that behaviour for the next twenty-four hours and record what the pattern tries to make you do instead.`;
+${analysis.escalation.length ? `First visible escalation marker: ${clip(analysis.escalation[0])}\nStop feeding one escalation behaviour for twenty-four hours and record what the pattern tries to make you do instead.` : 'Name one observable behaviour that keeps the pattern alive. Stop it for twenty-four hours and record the pull to repeat it.'}`;
     }
     if (mode === 'builder') {
-      return `BUILDER MODE\n\nTHE REAL PROBLEM\n${fact}\n\nWHAT IS IN YOUR CONTROL\nName the exact behaviour, decision, boundary, or environment you can change without waiting for anyone else.\n\nPROOF OF CHANGE\nChoose one action small enough to complete in the next 24 hours and concrete enough that another person could verify it happened.\n\nFRICTION\nWhat will make you avoid it, delay it, or replace it with another explanation?\n\nSYSTEM\nRemove one obstacle. Add one reminder. Name one consequence if you do not follow through.\n\nNEXT ACTION\nWrite the action as: I will [specific action] by [time] because [value], and I will record what happened.`;
+      return `BUILDER MODE\n\nFULL ACCOUNT CHECK\n${analysis.wordCount} words / ${analysis.allSentences.length} readable statements examined.\n\nWHAT YOU BROUGHT IN\n${accountSummary(analysis)}\n\nTHE REAL PROBLEM\nThe account points to ${analysis.costs.length ? analysis.costs.join(', ').toLowerCase() : 'a repeated situation without one clearly defined target'}. Choose one problem; do not build a plan for the entire history at once.\n\nWHAT IS IN YOUR CONTROL\n${bulletList(analysis.ownership, 'Your own observable actions are not clearly named. Name one before building the plan.', 4)}\n\nDESIRED OUTCOME\n${bulletList(analysis.needs, 'State what a successful result would look like in observable terms.', 3)}\n\nPROOF OF CHANGE\nChoose one action small enough to complete in the next 24 hours and concrete enough that another person could verify it happened.\n\nFRICTION\nWhat will make you avoid it, delay it, or replace it with another explanation?\n\nSYSTEM\nRemove one obstacle. Add one reminder. Name one consequence if you do not follow through.\n\nNEXT ACTION\nI will [specific action] by [time]. I will prove it by [visible evidence].`;
     }
     if (mode === 'bullshit') {
       const promises = text.match(/\b(i promise|trust me|believe me|next time|soon|someday|i will change|never again|guarantee)\b/gi) || [];
@@ -276,8 +337,14 @@ Name one behaviour that keeps the pattern alive. Stop feeding that behaviour for
       const evidence = text.match(/\b(text|email|photo|video|recording|receipt|statement|date|timestamp|witness|bank)\b/gi) || [];
       return `BULLSHIT DETECTOR
 
-CLAIM UNDER TEST
-${fact}
+FULL ACCOUNT CHECK
+${analysis.wordCount} words / ${analysis.allSentences.length} readable statements / ${analysis.sources.length} uploaded source(s) examined.
+
+ACCOUNT SNAPSHOT
+${accountSummary(analysis)}
+
+CLAIMS UNDER TEST
+${bulletList(analysis.interpretations.length ? analysis.interpretations : analysis.representative, 'No clear claim was detected.')}
 
 EVIDENCE
 ${evidence.length ? `${evidence.length} evidence reference(s) detected. Verify the actual files, dates, authorship, and full context.` : 'No obvious independent evidence reference detected. Conviction, memory, and repetition do not become proof by volume.'}
@@ -316,7 +383,7 @@ Choose only one: SUPPORTED / PARTLY SUPPORTED / UNPROVEN / CONTRADICTED / NOT EN
 NEXT ACTION
 Collect one missing fact, enforce one evidence-based boundary, or stop repeating a claim you cannot currently prove.`;
     }
-    return `MIRROR MODE\n\nWHAT YOU SAID HAPPENED\n${fact}\n\nLANGUAGE FLAGS\n${absolutes.length ? `Absolute language appeared ${absolutes.length} time(s): ${[...new Set(absolutes.map((item) => item.toLowerCase()))].join(', ')}.` : 'No obvious absolute language detected.'}\n\nOWNERSHIP CHECK\n${ownership.length ? `You named at least ${ownership.length} action(s) as your own.` : 'Your account says more about what happened to you than what you chose. Add your exact words and actions.'}\n\nEVIDENCE VS STORY\nSeparate what could be recorded from what you believe it meant.\n\nCONTRADICTION\nWhat standard are you demanding from someone else that your own behaviour did not meet?\n\nNEXT DECISION\nChoose one action: repair, enforce a boundary, leave, or stop feeding the loop.`;
+    return `MIRROR MODE\n\nFULL ACCOUNT CHECK\n${analysis.wordCount} words / ${analysis.charCount} characters / ${analysis.allSentences.length} readable statements examined.\n${analysis.sources.length ? `${analysis.sources.length} uploaded source(s) included.` : 'Written account examined in full.'}\n\nWHAT YOU BROUGHT IN\n${accountSummary(analysis)}\n\nWHAT THE MATERIAL SUPPORTS\n${bulletList(analysis.evidence, 'The account mainly provides personal description rather than independently checkable evidence.')}\n\nWHAT IS INTERPRETATION\n${bulletList(analysis.interpretations, 'No obvious interpretation language detected. Context can still be incomplete.', 4)}\n\nLANGUAGE FLAGS\n${absolutes.length ? `Absolute language appeared ${absolutes.length} time(s): ${[...new Set(absolutes.map((item) => item.toLowerCase()))].join(', ')}.` : 'No obvious absolute language detected.'}\n\nWHAT YOU SAY YOU NEED\n${bulletList(analysis.needs, 'Your desired outcome is not yet specific.', 4)}\n\nYOUR PART\n${bulletList(analysis.ownership, 'Your account says more about what happened to you than what you chose. Add your exact words and actions.', 4)}\n\nTHE GAP\nCompare the outcome you say you want with the behaviour you repeat when pressure rises. Name one mismatch the submitted material actually supports.\n\nTHE COST\n${analysis.costs.length ? analysis.costs.join(' / ') : 'The cost is not specific enough yet. Name what changed in observable terms.'}\n\nONE MOVE\nChoose one action under your control: repair, enforce a boundary, leave, collect a missing fact, or stop feeding the loop.`;
   }
 
   fileInput.addEventListener('change', (event) => {
@@ -339,22 +406,37 @@ Collect one missing fact, enforce one evidence-based boundary, or stop repeating
 
   document.getElementById('processFilesBtn').addEventListener('click', async () => {
     if (!queuedFiles.length) return;
+    const processButton = document.getElementById('processFilesBtn');
+    const analyzeButton = document.getElementById('analyzeBtn');
+    processButton.disabled = true;
+    analyzeButton.disabled = true;
     progressWrap.hidden = false;
     progressBar.style.width = '0%';
     const blocks = [];
+    const failures = [];
     try {
       for (let index = 0; index < queuedFiles.length; index += 1) {
-        const text = await extractFile(queuedFiles[index], index, queuedFiles.length);
-        if (text) blocks.push(`--- SOURCE ${index + 1}: ${queuedFiles[index].name} ---\n${text}`);
+        try {
+          const text = await extractFile(queuedFiles[index], index, queuedFiles.length);
+          if (text) blocks.push(`--- SOURCE ${index + 1}: ${queuedFiles[index].name} ---\n${text}`);
+          else failures.push(queuedFiles[index].name);
+        } catch (error) {
+          console.error(`Could not read ${queuedFiles[index].name}.`, error);
+          failures.push(queuedFiles[index].name);
+        }
       }
-      const combined = blocks.join('\n\n').slice(0, MAX_IMPORTED_CHARS);
+      const rawCombined = blocks.join('\n\n');
+      const remainingCapacity = Math.max(0, MAX_IMPORTED_CHARS - input.value.trim().length - 2);
+      const truncated = rawCombined.length > remainingCapacity;
+      const combined = rawCombined.slice(0, remainingCapacity);
       if (!combined) {
-        status.textContent = 'NO READABLE TEXT FOUND. TRY CLEARER SCREENSHOTS.';
+        status.textContent = remainingCapacity === 0 ? 'TEXT LIMIT REACHED / CLEAR OR SHORTEN THE ACCOUNT BEFORE IMPORTING FILES' : 'NO READABLE TEXT FOUND / TRY CLEARER SCREENSHOTS';
         return;
       }
       input.value = input.value.trim() ? `${input.value.trim()}\n\n${combined}` : combined;
       progressBar.style.width = '100%';
-      status.textContent = `${queuedFiles.length} FILE${queuedFiles.length === 1 ? '' : 'S'} READ LOCALLY / REVIEW THEN RUN ${modeCopy[mode].title}`;
+      const words = combined.split(/\s+/).filter(Boolean).length;
+      status.textContent = `${blocks.length} OF ${queuedFiles.length} FILES READ / ${words} WORDS EXTRACTED${failures.length ? ` / ${failures.length} NEED REVIEW` : ''}${truncated ? ' / TEXT LIMIT REACHED: CONTENT WAS TRUNCATED' : ''}`;
       window.setTimeout(() => {
         progressWrap.hidden = true;
       }, 900);
@@ -362,6 +444,9 @@ Collect one missing fact, enforce one evidence-based boundary, or stop repeating
       console.error('Local file processing failed.', error);
       status.textContent = 'LOCAL FILE READING FAILED. TRY FEWER OR CLEARER FILES.';
       progressWrap.hidden = true;
+    } finally {
+      processButton.disabled = false;
+      analyzeButton.disabled = false;
     }
   });
 
@@ -378,7 +463,10 @@ Collect one missing fact, enforce one evidence-based boundary, or stop repeating
       return;
     }
     output.textContent = build(text);
-    status.textContent = `${modeCopy[mode].title} COMPLETE / NOT SAVED`;
+    const sourceCount = (text.match(/^--- SOURCE\s+\d+:/gim) || []).length;
+    const wordCount = text.split(/\s+/).filter(Boolean).length;
+    status.textContent = `${modeCopy[mode].title} COMPLETE / ${wordCount} WORDS${sourceCount ? ` / ${sourceCount} SOURCES` : ''} EXAMINED / NOT SAVED`;
+    output.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 
   document.getElementById('clearBtn').addEventListener('click', () => {

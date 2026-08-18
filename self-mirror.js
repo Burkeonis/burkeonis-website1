@@ -179,6 +179,7 @@ Write one neutral timeline using only observable actions. Then choose one: clari
     use.textContent = info.use;
     modeExplainer.append(title, body, use);
     status.textContent = `${info.title} MODE SELECTED / READY / YOUR CONTENT IS NOT SAVED`;
+    window.dispatchEvent(new CustomEvent('selfmirror:modechange'));
   }
 
   function formatBytes(bytes) {

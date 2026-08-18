@@ -59,8 +59,8 @@
   function refreshNotice() {
     const remaining = remainingText();
     copy.textContent = remaining > 0
-      ? `${remaining} of ${DAILY_LIMIT} browser-only reflections remain today. Self Mirror plans include expanded access, memory, advanced analysis and connected progress.`
-      : 'Today’s public preview is complete. Compare Self Mirror plans for expanded access, memory, advanced analysis and connected progress.';
+      ? `${remaining} of ${DAILY_LIMIT} browser-only reflections remain today. Only this use counter is stored locally in your browser; your conversation and results are not saved. Self Mirror plans include expanded access, memory, advanced analysis and connected progress.`
+      : 'Today’s public preview is complete. Only the use counter is stored locally; your conversation and results are not saved. Compare Self Mirror plans for expanded access, memory, advanced analysis and connected progress.';
 
     if (remaining === 0) {
       analyzeButton.disabled = true;
@@ -87,5 +87,6 @@
     window.setTimeout(refreshNotice, 0);
   }, true);
 
+  window.addEventListener('selfmirror:modechange', refreshNotice);
   refreshNotice();
 })();

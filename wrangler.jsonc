@@ -1,0 +1,25 @@
+{
+  "name": "burkeonis-website1",
+  "compatibility_date": "2026-07-24",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "dist/server/index.js",
+  "assets": {
+    "directory": "dist/client",
+    "binding": "ASSETS",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  },
+  "d1_databases": [
+    {
+      "binding": "COMMERCE_DB",
+      "database_name": "self-mirror-db",
+      "database_id": "c073b291-542d-4a2b-9fec-03df730cd680"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "PRODUCT_FILES",
+      "bucket_name": "burkeonis-product-files"
+    }
+  ]
+}

@@ -39,7 +39,7 @@ export default function CheckoutButton() {
   return (
     <div className="checkout-card" id="checkout">
       <p className="checkout-label">One-time digital download</p>
-      <div className="checkout-price"><span>$</span>24<small>USD</small></div>
+      <div className="checkout-price"><span>$</span>24<small>CAD</small></div>
       <p className="checkout-copy">Five core case files. One direct way to examine the patterns you keep calling bad luck.</p>
       <label className="order-bump" htmlFor="shadow-work-bump">
         <input
@@ -49,7 +49,7 @@ export default function CheckoutButton() {
           type="checkbox"
         />
         <span>
-          <strong>Add the Shadow Work Protocol for $7</strong>
+          <strong>Add the Shadow Work Protocol for $7 CAD</strong>
           <small>A separate nine-page reflection file for the parts you keep avoiding.</small>
         </span>
       </label>

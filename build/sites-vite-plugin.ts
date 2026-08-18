@@ -51,6 +51,19 @@ const LEGACY_ASSET_EXCLUDES = new Set([
   "privacy.html",
   "refund.html",
   "terms.html",
+  // Cloudflare's not_found_handling ("404-page") serves the nearest
+  // 404.html for any browser navigation that doesn't hit a static file —
+  // that includes every app/ route (checkout, legal pages, etc.), since
+  // those only exist as Worker-rendered responses, not static files. Ship
+  // this and it silently shadows the whole Next.js app. Let the app's own
+  // not-found page handle unmatched routes instead.
+  "404.html",
+  // Written for the old static-only site: `script-src 'self'` with no
+  // 'unsafe-inline'/nonce blocks Next.js's inline hydration scripts, which
+  // would break client-side interactivity (checkout button, etc.) on every
+  // app/ page. Leave security headers off for now rather than ship a
+  // broken checkout; revisit with a CSP that allows Next.js hydration.
+  "_headers",
 ]);
 
 // The pre-rebuild site was served as one big static-assets directory (every

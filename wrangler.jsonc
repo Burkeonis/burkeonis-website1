@@ -1,3 +1,5 @@
+// Cloudflare Workers config for the burkeonis-website1 vinext build.
+// main = vinext build's Worker entry; assets.directory = vinext build's client output.
 {
   "name": "burkeonis-website1",
   "compatibility_date": "2026-07-24",

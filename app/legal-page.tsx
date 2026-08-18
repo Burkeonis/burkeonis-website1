@@ -35,6 +35,6 @@ const legalContent: Record<LegalKind, { title: string; sections: Array<[string, 
 export default function LegalPage({ kind }: { kind: LegalKind }) {
   const content = legalContent[kind];
   return (
-    <main className="commerce-page legal-page"><header className="commerce-header"><Link className="wordmark" href="/">BURKEONIS</Link><Link className="text-link" href="/pattern-files">Pattern Files</Link></header><article className="legal-shell"><h1>{content.title}</h1><p className="legal-effective">Effective for the Pattern Files digital-download offer. Last updated: August 18, 2026.</p>{content.sections.map(([heading, body]) => <section key={heading}><h2>{heading}</h2><p>{body}</p></section>)}<footer><Link href="/privacy">Privacy</Link><Link href="/terms">Terms</Link><Link href="/refunds">Refunds</Link><Link href="/disclaimer">Disclaimer</Link></footer></article></main>
+    <main className="commerce-page legal-page"><header className="commerce-header"><Link className="wordmark" href="/">BURKEONIS</Link><Link className="text-link" href="/pattern-files">Pattern Files</Link></header><article className="legal-shell"><h1>{content.title}</h1><p className="legal-effective">Effective for the Pattern Files digital-download offer. Last updated: August 18, 2026.</p>{content.sections.map(([heading, body]) => <section key={heading}><h2>{heading}</h2><p>{body}</p></section>)}<footer><Link href="/privacy">Privacy</Link><Link href="/terms">Terms</Link><Link href="/refund">Refunds</Link><Link href="/disclaimer">Disclaimer</Link></footer></article></main>
   );
 }

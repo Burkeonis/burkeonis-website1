@@ -178,7 +178,7 @@ Write one neutral timeline using only observable actions. Then choose one: clari
     use.className = 'mode-use';
     use.textContent = info.use;
     modeExplainer.append(title, body, use);
-    status.textContent = `${info.title} MODE SELECTED / READY / NOTHING IS SAVED`;
+    status.textContent = `${info.title} MODE SELECTED / READY / YOUR CONTENT IS YOUR CONTENT IS NOT SAVED`;
   }
 
   function formatBytes(bytes) {
@@ -252,7 +252,7 @@ Write one neutral timeline using only observable actions. Then choose one: clari
       }
     });
     renderFiles();
-    status.textContent = `${queuedFiles.length} FILE${queuedFiles.length === 1 ? '' : 'S'} READY / MAX 10 FILES, 5 MB EACH / NOTHING IS SAVED`;
+    status.textContent = `${queuedFiles.length} FILE${queuedFiles.length === 1 ? '' : 'S'} READY / MAX 10 FILES, 5 MB EACH / YOUR CONTENT IS YOUR CONTENT IS NOT SAVED`;
   }
 
   async function extractFile(file, index, total) {
@@ -434,6 +434,8 @@ Collect one missing fact, enforce one evidence-based boundary, or stop repeating
         return;
       }
       input.value = input.value.trim() ? `${input.value.trim()}\n\n${combined}` : combined;
+      queuedFiles = [];
+      renderFiles();
       progressBar.style.width = '100%';
       const words = combined.split(/\s+/).filter(Boolean).length;
       status.textContent = `${blocks.length} OF ${queuedFiles.length} FILES READ / ${words} WORDS EXTRACTED${failures.length ? ` / ${failures.length} NEED REVIEW` : ''}${truncated ? ' / TEXT LIMIT REACHED: CONTENT WAS TRUNCATED' : ''}`;
@@ -465,7 +467,7 @@ Collect one missing fact, enforce one evidence-based boundary, or stop repeating
     output.textContent = build(text);
     const sourceCount = (text.match(/^--- SOURCE\s+\d+:/gim) || []).length;
     const wordCount = text.split(/\s+/).filter(Boolean).length;
-    status.textContent = `${modeCopy[mode].title} COMPLETE / ${wordCount} WORDS${sourceCount ? ` / ${sourceCount} SOURCES` : ''} EXAMINED / NOT SAVED`;
+    status.textContent = `${modeCopy[mode].title} COMPLETE / ${wordCount} WORDS${sourceCount ? ` / ${sourceCount} SOURCES` : ''} EXAMINED / YOUR CONTENT IS NOT SAVED`;
     output.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 
@@ -478,8 +480,17 @@ Collect one missing fact, enforce one evidence-based boundary, or stop repeating
   });
 
   document.getElementById('copyBtn').addEventListener('click', async () => {
-    await navigator.clipboard.writeText(output.textContent);
-    status.textContent = 'RESULT COPIED / NOT SAVED';
+    if (!/^.+ MODE/m.test(output.textContent)) {
+      status.textContent = 'RUN A REFLECTION BEFORE COPYING A RESULT';
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(output.textContent);
+      status.textContent = 'RESULT COPIED / YOUR CONTENT IS NOT SAVED';
+    } catch (error) {
+      console.error('Could not copy the reflection result.', error);
+      status.textContent = 'COPY FAILED / SELECT THE RESULT TEXT AND COPY IT MANUALLY';
+    }
   });
 
   window.addEventListener('beforeunload', revokePreviewUrls);

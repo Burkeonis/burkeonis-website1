@@ -244,6 +244,7 @@ Write one neutral timeline using only observable actions. Then choose one: clari
         || /\.(txt|md|json|csv|log)$/i.test(file.name)
       )
     ));
+    const queuedBefore = queuedFiles.length;
     const existing = new Set(queuedFiles.map((file) => `${file.name}-${file.size}-${file.lastModified}`));
     allowed.forEach((file) => {
       const key = `${file.name}-${file.size}-${file.lastModified}`;
@@ -254,11 +255,10 @@ Write one neutral timeline using only observable actions. Then choose one: clari
     });
     renderFiles();
     const rejected = incoming.length - allowed.length;
-    const acceptedKeys = new Set(queuedFiles.map((file) => `${file.name}-${file.size}-${file.lastModified}`));
-    const notQueued = allowed.filter((file) => !acceptedKeys.has(`${file.name}-${file.size}-${file.lastModified}`)).length;
+    const notQueued = allowed.length - (queuedFiles.length - queuedBefore);
     const issues = [
       rejected ? `${rejected} UNSUPPORTED OR OVER 5 MB` : '',
-      notQueued ? `${notQueued} OVER THE 10-FILE LIMIT` : '',
+      notQueued ? `${notQueued} DUPLICATE OR OVER THE 10-FILE LIMIT` : '',
     ].filter(Boolean);
     status.textContent = `${queuedFiles.length} FILE${queuedFiles.length === 1 ? '' : 'S'} READY / MAX 10 FILES, 5 MB EACH${issues.length ? ` / ${issues.join(' / ')}` : ''} / YOUR CONTENT IS NOT SAVED`;
   }

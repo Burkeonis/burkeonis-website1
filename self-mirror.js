@@ -178,7 +178,7 @@ Write one neutral timeline using only observable actions. Then choose one: clari
     use.className = 'mode-use';
     use.textContent = info.use;
     modeExplainer.append(title, body, use);
-    status.textContent = `${info.title} MODE SELECTED / READY / YOUR CONTENT IS YOUR CONTENT IS NOT SAVED`;
+    status.textContent = `${info.title} MODE SELECTED / READY / YOUR CONTENT IS NOT SAVED`;
   }
 
   function formatBytes(bytes) {
@@ -252,7 +252,14 @@ Write one neutral timeline using only observable actions. Then choose one: clari
       }
     });
     renderFiles();
-    status.textContent = `${queuedFiles.length} FILE${queuedFiles.length === 1 ? '' : 'S'} READY / MAX 10 FILES, 5 MB EACH / YOUR CONTENT IS YOUR CONTENT IS NOT SAVED`;
+    const rejected = incoming.length - allowed.length;
+    const acceptedKeys = new Set(queuedFiles.map((file) => `${file.name}-${file.size}-${file.lastModified}`));
+    const notQueued = allowed.filter((file) => !acceptedKeys.has(`${file.name}-${file.size}-${file.lastModified}`)).length;
+    const issues = [
+      rejected ? `${rejected} UNSUPPORTED OR OVER 5 MB` : '',
+      notQueued ? `${notQueued} OVER THE 10-FILE LIMIT` : '',
+    ].filter(Boolean);
+    status.textContent = `${queuedFiles.length} FILE${queuedFiles.length === 1 ? '' : 'S'} READY / MAX 10 FILES, 5 MB EACH${issues.length ? ` / ${issues.join(' / ')}` : ''} / YOUR CONTENT IS NOT SAVED`;
   }
 
   async function extractFile(file, index, total) {
@@ -412,6 +419,7 @@ Collect one missing fact, enforce one evidence-based boundary, or stop repeating
     analyzeButton.disabled = true;
     progressWrap.hidden = false;
     progressBar.style.width = '0%';
+    const totalFiles = queuedFiles.length;
     const blocks = [];
     const failures = [];
     try {
@@ -438,7 +446,7 @@ Collect one missing fact, enforce one evidence-based boundary, or stop repeating
       renderFiles();
       progressBar.style.width = '100%';
       const words = combined.split(/\s+/).filter(Boolean).length;
-      status.textContent = `${blocks.length} OF ${queuedFiles.length} FILES READ / ${words} WORDS EXTRACTED${failures.length ? ` / ${failures.length} NEED REVIEW` : ''}${truncated ? ' / TEXT LIMIT REACHED: CONTENT WAS TRUNCATED' : ''}`;
+      status.textContent = `${blocks.length} OF ${totalFiles} FILES READ / ${words} WORDS EXTRACTED${failures.length ? ` / ${failures.length} NEED REVIEW` : ''}${truncated ? ' / TEXT LIMIT REACHED: CONTENT WAS TRUNCATED' : ''}`;
       window.setTimeout(() => {
         progressWrap.hidden = true;
       }, 900);

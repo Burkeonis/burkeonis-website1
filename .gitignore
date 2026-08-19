@@ -2,3 +2,6 @@
 # Music source masters and distributor uploads
 masters/
 release/**/The Cage Door - DistroKid Upload.mp3
+
+# Local Sites CLI runtime state (npm cache, lockfiles, logs) — disposable
+.sites-runtime/

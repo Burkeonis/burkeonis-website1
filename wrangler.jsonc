@@ -1,0 +1,27 @@
+// Cloudflare Workers config for the burkeonis-website1 vinext build.
+// main = vinext build's Worker entry; assets.directory = vinext build's client output.
+// compatibility_flags omitted: vinext's generated config already adds nodejs_compat.
+{
+  "name": "burkeonis-website1",
+  "compatibility_date": "2026-07-24",
+  "main": "dist/server/index.js",
+  "assets": {
+    "directory": "dist/client",
+    "binding": "ASSETS",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  },
+  "d1_databases": [
+    {
+      "binding": "COMMERCE_DB",
+      "database_name": "self-mirror-db",
+      "database_id": "c073b291-542d-4a2b-9fec-03df730cd680"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "PRODUCT_FILES",
+      "bucket_name": "burkeonis-product-files"
+    }
+  ]
+}

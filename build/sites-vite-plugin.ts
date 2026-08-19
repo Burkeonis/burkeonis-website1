@@ -1,4 +1,4 @@
-import { access, cp, mkdir, rm } from "node:fs/promises";
+import { access, cp, mkdir, readdir, rm } from "node:fs/promises";
 import { resolve } from "node:path";
 import type { Plugin } from "vite";
 
@@ -11,6 +11,75 @@ async function exists(path: string): Promise<boolean> {
       return false;
     }
     throw error;
+  }
+}
+
+// Top-level repo entries that must NOT be copied into the Worker's static
+// assets output (dist/client). This is either tooling/source for the new
+// Next.js app, or a legacy static file that a real app/ route now replaces
+// (those are excluded on purpose so the old file can't shadow the new page).
+const LEGACY_ASSET_EXCLUDES = new Set([
+  ".git",
+  ".github",
+  ".assetsignore",
+  ".gitignore",
+  ".openai",
+  ".wrangler",
+  "node_modules",
+  "app",
+  "src",
+  "build",
+  "scripts",
+  "worker",
+  "tests",
+  "public",
+  "dist",
+  "package.json",
+  "package-lock.json",
+  "tsconfig.json",
+  "next.config.ts",
+  "postcss.config.mjs",
+  "vite.config.ts",
+  "wrangler.jsonc",
+  "wrangler.toml",
+  "README.md",
+  "SECURITY.md",
+  // Superseded by real app/ routes added in the commerce rebuild — keep the
+  // new pages in charge instead of letting the old static file win.
+  "index.html",
+  "disclaimer.html",
+  "privacy.html",
+  "refund.html",
+  "terms.html",
+  // Cloudflare's not_found_handling ("404-page") serves the nearest
+  // 404.html for any browser navigation that doesn't hit a static file —
+  // that includes every app/ route (checkout, legal pages, etc.), since
+  // those only exist as Worker-rendered responses, not static files. Ship
+  // this and it silently shadows the whole Next.js app. Let the app's own
+  // not-found page handle unmatched routes instead.
+  "404.html",
+  // Written for the old static-only site: `script-src 'self'` with no
+  // 'unsafe-inline'/nonce blocks Next.js's inline hydration scripts, which
+  // would break client-side interactivity (checkout button, etc.) on every
+  // app/ page. Leave security headers off for now rather than ship a
+  // broken checkout; revisit with a CSP that allows Next.js hydration.
+  "_headers",
+]);
+
+// The pre-rebuild site was served as one big static-assets directory (every
+// file in the repo root). The Next.js rebuild only ships what vinext
+// renders into dist/client, so without this step every legacy page
+// (self-mirror, misophonia, shadow-work, the song pages, protocol PDFs,
+// etc.) would 404 the moment this Worker took over production traffic.
+// Copy everything else through unchanged so those routes keep working.
+async function copyLegacyStaticAssets(root: string, outDir: string) {
+  const entries = await readdir(root, { withFileTypes: true });
+  for (const entry of entries) {
+    if (LEGACY_ASSET_EXCLUDES.has(entry.name)) continue;
+    if (entry.name.startsWith(".env")) continue;
+    const from = resolve(root, entry.name);
+    const to = resolve(outDir, entry.name);
+    await cp(from, to, { recursive: true, force: false, errorOnExist: false });
   }
 }
 
@@ -39,6 +108,11 @@ export function sites(): Plugin {
         await cp(drizzleSource, resolve(outputDirectory, "drizzle"), {
           recursive: true,
         });
+      }
+
+      const clientOutDir = resolve(root, "dist", "client");
+      if (await exists(clientOutDir)) {
+        await copyLegacyStaticAssets(root, clientOutDir);
       }
     },
   };

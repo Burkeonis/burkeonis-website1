@@ -97,10 +97,10 @@
   font-size: clamp(18px, 2.2vw, 31px);
   line-height: 1.38;
   color: #eee9df;
-  /* Ensure wrapping on all widths */
+  /* Ensure wrapping on all widths without mid-word hyphen splits */
   overflow-wrap: break-word;
   word-break: normal;
-  hyphens: auto;
+  hyphens: none;
 }
 
 .nlw-intro > p:not(.nlw-kicker):not(.nlw-lead) {

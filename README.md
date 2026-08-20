@@ -1,108 +1,74 @@
-# vinext-starter
+# burkeonis-website1
 
-A clean full-stack starter running on
-[vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
-Drizzle support.
+The Burkeonis website: a [vinext](https://github.com/cloudflare/vinext)
+(Next.js on Vite) app that deploys to **Cloudflare Workers** and sells
+digital products ("The Pattern Files" / "Shadow Work Protocol") through a
+**Stripe Checkout** commerce flow backed by Cloudflare **D1** (orders) and
+**R2** (product files).
 
 ## Prerequisites
 
 - Node.js `>=22.13.0`
-- Linux with `flock`, `curl`, and GNU `timeout`
+- A Cloudflare account with Workers, D1, and R2 access (for deploys)
+- A Stripe account (test and live modes) for commerce
 
-## Sites Lifecycle
+## Stack
 
-The Sites lifecycle CLI runs the locked dependency install before returning this checkout. Edit the source under `app/`, then checkpoint when a coherent milestone is ready to inspect or share. The remote Sites builder runs `npm run build` against the pushed commit. Do not repeat install or build as a normal pre-checkpoint step.
+- **Framework:** [vinext](https://github.com/cloudflare/vinext) (Next.js API compatibility layer running on Vite + Cloudflare's Vite plugin)
+- **Hosting:** Cloudflare Workers, configured in [`wrangler.jsonc`](./wrangler.jsonc)
+  - `main`: `dist/server/index.js` (the built Worker entry)
+  - `assets`: `dist/client` (the built static/client output)
+  - D1 binding `COMMERCE_DB` — stores orders and fulfillment state
+  - R2 binding `PRODUCT_FILES` — stores the purchasable ZIP files
+- **Payments:** Stripe Checkout + webhooks (`app/api/checkout`, commerce logic in `app/lib/commerce.ts`)
+- **Downloads:** signed, time-limited download tokens (`app/api/download`)
 
-This starter does not use `wrangler.jsonc`.
+Deploys happen automatically via Cloudflare's Git integration when `main` is
+pushed. There is no separate CI pipeline in this repo beyond the build/test
+scripts below.
 
-`install:ci` is intentionally a single, non-retrying `npm ci`. It refuses a concurrent install for the same project, consumes a matching image-seeded npm cache with `--prefer-offline` while retaining registry fallback for a missing cache object, otherwise downloads and verifies the complete vinext tarball recorded in `package-lock.json`, limits npm to one socket, and terminates a stalled install. `build` applies a short timeout and then validates the Sites artifact. These helpers target Linux and use GNU `timeout`; they are not native macOS scripts.
+## Environment configuration (Cloudflare Worker bindings)
 
-Scripts that need writable project-scoped home, npm, XDG, and temporary paths use `scripts/sites-env.sh`. The `dev` and `start` scripts honor the caller's runtime environment and keep Wrangler logs inside the checkout. The generated `.sites-runtime/` directory is disposable and ignored by Git.
+Configured in the Cloudflare dashboard under **Workers & Pages → Settings →
+Variables and Secrets** (not committed to git). Non-secret values that are
+safe to keep in source control live in `wrangler.jsonc`'s `vars` block;
+everything else is set directly in the Cloudflare dashboard per environment
+(test vs. live Stripe keys differ).
+
+**Secrets** (encrypted, dashboard-only):
+- `STRIPE_SECRET_KEY` — Stripe secret key for the active mode (test/live)
+- `STRIPE_WEBHOOK_SECRET` — signing secret for the `checkout.session.completed` webhook
+- `DOWNLOAD_TOKEN_SECRET` — HMAC secret used to sign download tokens
+
+**Plain vars** (see `wrangler.jsonc`, or override per-environment in the dashboard):
+- `STRIPE_PATTERN_FILES_PRICE_ID` — Stripe Price ID for the base product
+- `STRIPE_SHADOW_WORK_PRICE_ID` — Stripe Price ID for the order-bump product
+- `PATTERN_FILES_OBJECT_KEY` — R2 object key for the base ZIP
+- `PATTERN_FILES_WITH_SHADOW_OBJECT_KEY` — R2 object key for the bundled ZIP
 
 ## Included Shape
 
-- edit site code under `app/`
-- `app/chatgpt-auth.ts` provides optional dispatch-owned ChatGPT sign-in helpers
-- `.openai/hosting.json` declares optional Sites D1 and R2 bindings
-- `vite.config.ts` simulates declared bindings for local development
-- `db/index.ts` reads the D1 binding from the Cloudflare Worker environment
-- `db/schema.ts` starts intentionally empty
-- `examples/d1/` contains an optional D1 example surface
-- `drizzle.config.ts` supports local migration generation when needed
-
-## Workspace Auth Headers
-
-OpenAI workspace sites can read the current user's email from
-`oai-authenticated-user-email`.
-
-SIWC-authenticated workspace sites may also receive
-`oai-authenticated-user-full-name` when the user's SIWC profile has a non-empty
-`name` claim. The full-name value is percent-encoded UTF-8 and is accompanied by
-`oai-authenticated-user-full-name-encoding: percent-encoded-utf-8`.
-
-Treat the full name as optional and fall back to email when it is absent:
-
-```tsx
-import { headers } from "next/headers";
-
-export default async function Home() {
-  const requestHeaders = await headers();
-  const email = requestHeaders.get("oai-authenticated-user-email");
-  const encodedFullName = requestHeaders.get("oai-authenticated-user-full-name");
-  const fullName =
-    encodedFullName &&
-    requestHeaders.get("oai-authenticated-user-full-name-encoding") ===
-      "percent-encoded-utf-8"
-      ? decodeURIComponent(encodedFullName)
-      : null;
-
-  const displayName = fullName ?? email;
-  // ...
-}
-```
-
-## Optional Dispatch-Owned ChatGPT Sign-In
-
-Import the ready-to-use helpers from `app/chatgpt-auth.ts` when the site needs
-optional or required ChatGPT sign-in:
-
-- Use `getChatGPTUser()` for optional signed-in UI.
-- Use `requireChatGPTUser(returnTo)` for server-rendered pages that should send
-  anonymous visitors through Sign in with ChatGPT.
-- Use `chatGPTSignInPath(returnTo)` and `chatGPTSignOutPath(returnTo)` for
-  browser links or actions.
-- Pass a same-origin relative `returnTo` path for the destination after sign-in
-  or sign-out. The helper validates and safely encodes it.
-- Mark protected pages with `export const dynamic = "force-dynamic"` because
-  they depend on per-request identity headers.
-
-Dispatch owns `/signin-with-chatgpt`, `/signout-with-chatgpt`, `/callback`, the
-OAuth cookies, and identity header injection. Do not implement app routes for
-those reserved paths. Routes that do not import and call the helper remain
-anonymous-compatible.
-
-SIWC establishes identity only; it does not prove workspace membership. Use the
-Sites hosting platform's access policy controls for workspace-wide restrictions,
-or enforce explicit server-side membership or allowlist checks.
-
-Use SIWC for account pages, user-specific dashboards, saved records, and write
-actions tied to the current ChatGPT user. Leave public content anonymous.
+- `app/` — site code (pages, API routes, commerce UI)
+- `app/lib/commerce.ts` — Stripe session creation, webhook signature verification, download token signing/verification, and the `configurationProblem()` check that reports missing bindings
+- `app/api/checkout/` — creates the Stripe Checkout session
+- `app/api/download/` — verifies a download token and streams the file from R2
+- `db/` — Drizzle schema/client for the D1-backed orders table
+- `wrangler.jsonc` — the Cloudflare Worker configuration (bindings, vars)
 
 ## Diagnostic Commands
 
-- `npm run install:ci`: perform the one bounded lockfile install
-- `npm run dev`: start the Vite/Vinext development server
-- `npm run build`: build and validate the deployable Sites artifact
-- `npm run start`: start the built Vinext application
-- `npm test`: build, validate, and verify the rendered development-preview metadata
-- `npm run validate:artifact`: recheck an existing artifact's manifest and ESM `default.fetch` export
-- `npm run db:generate`: generate Drizzle migrations after schema changes
-
-Use build and validation commands for targeted diagnosis after a remote failure, not as part of the normal checkpoint path.
-
-The timeout defaults can be overridden for a controlled canary with `SITES_INSTALL_TIMEOUT`, `SITES_INSTALL_KILL_AFTER`, `SITES_BUILD_TIMEOUT`, and `SITES_BUILD_KILL_AFTER`. A timeout fails the command; the helpers never retry an unchanged install or build.
+- `npm run install:ci` — bounded, non-retrying lockfile install
+- `npm run dev` — start the local Vite/vinext dev server
+- `npm run build` — build and validate the deployable artifact
+- `npm run start` — run the built app locally
+- `npm test` — build, then run the rendered-HTML checks
+- `npm run validate:artifact` — recheck an existing build artifact
+- `npm run db:generate` — generate Drizzle migrations after schema changes
 
 ## Learn More
 
 - [vinext Documentation](https://github.com/cloudflare/vinext)
+- [Cloudflare Workers Documentation](https://developers.cloudflare.com/workers/)
 - [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)
+- [Stripe Checkout Documentation](https://docs.stripe.com/checkout)
+

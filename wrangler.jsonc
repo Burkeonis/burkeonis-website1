@@ -11,6 +11,12 @@
     "html_handling": "auto-trailing-slash",
     "not_found_handling": "404-page"
   },
+  "vars": {
+    "STRIPE_PATTERN_FILES_PRICE_ID": "price_1U69nWCE9Tb0E1aSYa9k0nHI",
+    "STRIPE_SHADOW_WORK_PRICE_ID": "price_1U69tYCE9Tb0E1aSJzusmJui",
+    "PATTERN_FILES_OBJECT_KEY": "burkeonis-pattern-files-core_1.zip",
+    "PATTERN_FILES_WITH_SHADOW_OBJECT_KEY": "burkeonis-pattern-files-plus-shadow-work_1.zip"
+  },
   "d1_databases": [
     {
       "binding": "COMMERCE_DB",

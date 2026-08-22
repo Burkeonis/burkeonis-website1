@@ -58,5 +58,26 @@
 .legal-shell section { padding: 26px 0; border-top: 1px solid var(--line); }
 .legal-shell p { color: var(--muted); font-size: 15px; line-height: 1.75; }
 .legal-shell footer { display: flex; flex-wrap: wrap; gap: 18px; padding-top: 32px; border-top: 1px solid var(--line); }
-@media (max-width: 900px) { .product-hero-grid, .section-intro, .split-grid, .product-checkout-section { grid-template-columns: 1fr; gap: 45px; } .file-grid { grid-template-columns: repeat(3, 1fr); } }
-@media (max-width: 620px) { .commerce-shell { width: min(100% - 30px, 1120px); } .commerce-header nav { display: none; } .product-hero { padding: 78px 0 72px; } .product-hero h1, .order-state h1 { font-size: 64px; } .product-actions { align-items: flex-start; flex-direction: column; } .file-grid { grid-template-columns: 1fr; } .checkout-card { padding: 25px; } .footer-line { align-items: flex-start; flex-direction: column; } }
+/* First Pattern File — free lead-magnet landing page. Reuses the commerce
+   design system (case-file cover, checkout-card) so it feels like a native
+   part of the Pattern Files product line, not a bolted-on opt-in page. */
+.pfc-hero { padding-bottom: 70px; }
+.pfc-sub { margin-top: 18px; }
+.pfc-stack { min-height: 320px; }
+.pfc-cover { right: 8%; bottom: 0; }
+.pfc-content { padding-top: 0; }
+.pfc-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.pfc-step { min-height: 260px; display: flex; flex-direction: column; padding: 24px; background: linear-gradient(150deg, #1d2025, #101113); border: 1px solid var(--line); }
+.pfc-step span { color: var(--orange-hot); font: 11px var(--font-geist-mono), monospace; }
+.pfc-step h3 { margin: 16px 0 12px; font-size: 24px; }
+.pfc-step p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.6; }
+.pfc-closing { max-width: 760px; margin: 40px auto 0; color: var(--muted); font-size: 15px; line-height: 1.65; text-align: center; }
+.pfc-gate { max-width: 480px; margin: 0 auto 60px; text-align: left; }
+.pfc-gate-title { margin: 10px 0 12px; font-size: 30px; }
+.pfc-form { display: flex; flex-direction: column; gap: 14px; margin: 22px 0; }
+.pfc-email-input { min-height: 48px; padding: 0 16px; background: rgba(0,0,0,.3); border: 1px solid var(--line); color: var(--white); font-size: 15px; }
+.pfc-email-input:focus { outline: 1px solid var(--orange-hot); }
+.pfc-honeypot { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.pfc-download { display: block; margin: 34px auto 0; }
+@media (max-width: 900px) { .product-hero-grid, .section-intro, .split-grid, .product-checkout-section { grid-template-columns: 1fr; gap: 45px; } .file-grid { grid-template-columns: repeat(3, 1fr); } .pfc-steps { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 620px) { .commerce-shell { width: min(100% - 30px, 1120px); } .commerce-header nav { display: none; } .product-hero { padding: 78px 0 72px; } .product-hero h1, .order-state h1 { font-size: 64px; } .product-actions { align-items: flex-start; flex-direction: column; } .file-grid { grid-template-columns: 1fr; } .checkout-card { padding: 25px; } .footer-line { align-items: flex-start; flex-direction: column; } .pfc-steps { grid-template-columns: 1fr; } .pfc-stack { min-height: 240px; } }

@@ -1,6 +1,22 @@
 export const PRIMARY_PRODUCT_CODE = "pattern-files-core";
 export const ORDER_BUMP_CODE = "shadow-work-protocol";
 
+export const PAID_PRODUCTS = {
+  "build-your-nexus": { title: "Build Your Nexus Field Guide", priceId: "price_1UCdk7CE9Tb0E1aS57w9EnBW", objectKey: "Burkeonis_Build_Your_Nexus_Field_Guide.pdf", filename: "Burkeonis_Build_Your_Nexus_Field_Guide.pdf" },
+  "relationship-case-file": { title: "Relationship Case File", priceId: "price_1UCdkJCE9Tb0E1aS5OzaDMPs", objectKey: "Burkeonis_Relationship_Case_File.pdf", filename: "Burkeonis_Relationship_Case_File.pdf" },
+  "self-mirror-field-test": { title: "Self Mirror Field Test", priceId: "price_1UCdkOCE9Tb0E1aSVrEeSwlU", objectKey: "Burkeonis_Self_Mirror_Field_Test.pdf", filename: "Burkeonis_Self_Mirror_Field_Test.pdf" },
+  "relationships-and-repair": { title: "Relationships & Repair Bundle", priceId: "price_1UCdkRCE9Tb0E1aSHRfdBYIL", objectKey: "burkeonis-relationships-and-repair.zip", filename: "burkeonis-relationships-and-repair.zip" },
+  "identity-and-inner-work": { title: "Identity & Inner Work Bundle", priceId: "price_1UCdkUCE9Tb0E1aSEcKaNy5O", objectKey: "burkeonis-identity-and-inner-work.zip", filename: "burkeonis-identity-and-inner-work.zip" },
+  "recovery-and-regulation": { title: "Recovery & Regulation Bundle", priceId: "price_1UCdkXCE9Tb0E1aS3PD0oUSQ", objectKey: "burkeonis-recovery-and-regulation.zip", filename: "burkeonis-recovery-and-regulation.zip" },
+  "life-and-leadership": { title: "Life & Leadership Bundle", priceId: "price_1UCdkaCE9Tb0E1aSM7KtGmFc", objectKey: "burkeonis-life-and-leadership.zip", filename: "burkeonis-life-and-leadership.zip" },
+  "complete-field-guide-library": { title: "Complete Field Guide Library", priceId: "price_1UCdkdCE9Tb0E1aSzqxrnnmg", objectKey: "burkeonis-complete-field-guide-library.zip", filename: "burkeonis-complete-field-guide-library.zip" },
+} as const;
+
+export type PaidProductCode = keyof typeof PAID_PRODUCTS;
+export function getPaidProduct(code: string | null | undefined) {
+  return code && code in PAID_PRODUCTS ? PAID_PRODUCTS[code as PaidProductCode] : null;
+}
+
 export type CheckoutSelection = {
   addShadowWork: boolean;
 };
@@ -22,6 +38,7 @@ export type PaidOrder = {
   email: string | null;
   customerId: string | null;
   addShadowWork: boolean;
+  productCode: string;
   fulfilledAt: string;
 };
 
@@ -110,6 +127,10 @@ export async function ensureCommerceSchema(db: D1Database): Promise<void> {
       )`,
     ),
   ]);
+  const columns = await db.prepare("PRAGMA table_info(commerce_orders)").all<{ name: string }>();
+  if (!columns.results.some((column) => column.name === "product_code")) {
+    await db.prepare("ALTER TABLE commerce_orders ADD COLUMN product_code TEXT NOT NULL DEFAULT 'pattern-files-core'").run();
+  }
 }
 
 export async function recordPaidOrder(
@@ -120,6 +141,7 @@ export async function recordPaidOrder(
     email: string | null;
     customerId: string | null;
     addShadowWork: boolean;
+    productCode?: string;
   },
 ): Promise<void> {
   await ensureCommerceSchema(db);
@@ -135,8 +157,8 @@ export async function recordPaidOrder(
     db
       .prepare(
         `INSERT OR IGNORE INTO commerce_orders
-         (checkout_session_id, stripe_event_id, customer_email, customer_id, includes_shadow_work, fulfillment_state, fulfilled_at)
-         VALUES (?, ?, ?, ?, ?, 'fulfilled', ?)`,
+         (checkout_session_id, stripe_event_id, customer_email, customer_id, includes_shadow_work, product_code, fulfillment_state, fulfilled_at)
+         VALUES (?, ?, ?, ?, ?, ?, 'fulfilled', ?)`,
       )
       .bind(
         input.checkoutSessionId,
@@ -144,6 +166,7 @@ export async function recordPaidOrder(
         input.email,
         input.customerId,
         input.addShadowWork ? 1 : 0,
+        input.productCode ?? PRIMARY_PRODUCT_CODE,
         now,
       ),
   ]);
@@ -153,7 +176,7 @@ export async function getPaidOrder(db: D1Database, checkoutSessionId: string): P
   await ensureCommerceSchema(db);
   const result = await db
     .prepare(
-      `SELECT checkout_session_id, customer_email, customer_id, includes_shadow_work, fulfilled_at
+      `SELECT checkout_session_id, customer_email, customer_id, includes_shadow_work, product_code, fulfilled_at
        FROM commerce_orders
        WHERE checkout_session_id = ? AND fulfillment_state = 'fulfilled'`,
     )
@@ -163,6 +186,7 @@ export async function getPaidOrder(db: D1Database, checkoutSessionId: string): P
       customer_email: string | null;
       customer_id: string | null;
       includes_shadow_work: number;
+      product_code: string;
       fulfilled_at: string;
     }>();
 
@@ -173,6 +197,7 @@ export async function getPaidOrder(db: D1Database, checkoutSessionId: string): P
     email: result.customer_email,
     customerId: result.customer_id,
     addShadowWork: result.includes_shadow_work === 1,
+    productCode: result.product_code || PRIMARY_PRODUCT_CODE,
     fulfilledAt: result.fulfilled_at,
   };
 }

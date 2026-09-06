@@ -1,6 +1,7 @@
 import {
   ORDER_BUMP_CODE,
   PRIMARY_PRODUCT_CODE,
+  getPaidProduct,
   configurationProblem,
   getCommerceBindings,
   getSiteOrigin,
@@ -80,4 +81,31 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   return json({ checkoutUrl: session.url });
+}
+
+export async function GET(request: Request): Promise<Response> {
+  const productCode = new URL(request.url).searchParams.get("product");
+  const product = getPaidProduct(productCode);
+  if (!product || !productCode) return Response.redirect(new URL("/tools.html", request.url), 303);
+
+  const bindings = await getCommerceBindings();
+  if (!bindings.STRIPE_SECRET_KEY) return json({ error: "Secure checkout is temporarily unavailable." }, 503);
+  const isLiveMode = bindings.STRIPE_SECRET_KEY.startsWith("sk_live_");
+  if (!isLiveMode && !bindings.STRIPE_SECRET_KEY.startsWith("sk_test_")) return json({ error: "Stripe checkout is not configured." }, 503);
+
+  const origin = getSiteOrigin(request);
+  const form = new URLSearchParams({
+    mode: "payment",
+    customer_creation: "always",
+    success_url: `${origin}/order/success?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${origin}/order/cancel`,
+    "line_items[0][price]": product.priceId,
+    "line_items[0][quantity]": "1",
+    "metadata[product_code]": productCode,
+  });
+  const stripeResponse = await fetch("https://api.stripe.com/v1/checkout/sessions", { method: "POST", headers: { Authorization: `Basic ${btoa(`${bindings.STRIPE_SECRET_KEY}:`)}`, "Content-Type": "application/x-www-form-urlencoded" }, body: form.toString() });
+  if (!stripeResponse.ok) return json({ error: "Checkout could not be started. Please try again." }, 502);
+  const session = (await stripeResponse.json()) as { url?: string; livemode?: boolean };
+  if (!session.url || session.livemode !== isLiveMode) return json({ error: "Checkout could not be verified." }, 502);
+  return Response.redirect(session.url, 303);
 }

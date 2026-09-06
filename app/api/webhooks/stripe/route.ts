@@ -1,4 +1,4 @@
-import { ORDER_BUMP_CODE, PRIMARY_PRODUCT_CODE, getCommerceBindings, recordAnalyticsEvent, recordPaidOrder, verifyStripeSignature } from "../../../lib/commerce";
+import { ORDER_BUMP_CODE, PRIMARY_PRODUCT_CODE, getCommerceBindings, getPaidProduct, recordAnalyticsEvent, recordPaidOrder, verifyStripeSignature } from "../../../lib/commerce";
 
 export const dynamic = "force-dynamic";
 
@@ -38,7 +38,9 @@ export async function POST(request: Request): Promise<Response> {
   if (!eventId || !sessionId) return text("Incomplete Checkout event.", 400);
 
   const session = await retrieveSession(sessionId, bindings.STRIPE_SECRET_KEY);
-  if (!session || session.id !== sessionId || session.livemode !== isLiveMode || session.payment_status !== "paid" || session.metadata?.product_code !== PRIMARY_PRODUCT_CODE) {
+  const productCode = session?.metadata?.product_code;
+  const eligibleProduct = productCode === PRIMARY_PRODUCT_CODE || Boolean(getPaidProduct(productCode));
+  if (!session || session.id !== sessionId || session.livemode !== isLiveMode || session.payment_status !== "paid" || !eligibleProduct || !productCode) {
     return text("Checkout session is not eligible for fulfillment.", 400);
   }
 
@@ -50,8 +52,9 @@ export async function POST(request: Request): Promise<Response> {
     email: session.customer_details?.email ?? null,
     customerId: session.customer ?? null,
     addShadowWork,
+    productCode,
   });
-  await recordAnalyticsEvent(bindings.COMMERCE_DB, { eventName: "pattern_files_purchase_confirmed", addShadowWork });
+  await recordAnalyticsEvent(bindings.COMMERCE_DB, { eventName: "purchase_confirmed", productCode, addShadowWork });
 
   return text("Received.", 200);
 }

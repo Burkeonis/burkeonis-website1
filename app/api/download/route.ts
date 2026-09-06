@@ -1,4 +1,4 @@
-import { getCommerceBindings, getPaidOrder, recordDelivery, verifyDownloadToken } from "../../lib/commerce";
+import { PRIMARY_PRODUCT_CODE, getCommerceBindings, getPaidOrder, getPaidProduct, recordDelivery, verifyDownloadToken } from "../../lib/commerce";
 
 export const dynamic = "force-dynamic";
 
@@ -21,14 +21,17 @@ export async function GET(request: Request): Promise<Response> {
   const order = await getPaidOrder(bindings.COMMERCE_DB, checkoutSessionId);
   if (!order) return failure("No fulfilled order was found for this download.", 403);
 
-  const objectKey = order.addShadowWork ? bindings.PATTERN_FILES_WITH_SHADOW_OBJECT_KEY : bindings.PATTERN_FILES_OBJECT_KEY;
+  const paidProduct = getPaidProduct(order.productCode);
+  const objectKey = order.productCode === PRIMARY_PRODUCT_CODE
+    ? (order.addShadowWork ? bindings.PATTERN_FILES_WITH_SHADOW_OBJECT_KEY : bindings.PATTERN_FILES_OBJECT_KEY)
+    : paidProduct?.objectKey;
   if (!objectKey) return failure("The selected product package is not configured.", 503);
 
   const product = await bindings.PRODUCT_FILES.get(objectKey);
   if (!product?.body) return failure("The protected product package is unavailable.", 404);
 
   await recordDelivery(bindings.COMMERCE_DB, checkoutSessionId);
-  const filename = order.addShadowWork ? "burkeonis-pattern-files-plus-shadow-work.zip" : "burkeonis-pattern-files-core.zip";
+  const filename = paidProduct?.filename ?? (order.addShadowWork ? "burkeonis-pattern-files-plus-shadow-work.zip" : "burkeonis-pattern-files-core.zip");
 
   return new Response(product.body, {
     headers: {

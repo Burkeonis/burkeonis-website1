@@ -61,7 +61,7 @@
 /* First Pattern File — free lead-magnet landing page. Reuses the commerce
    design system (case-file cover, checkout-card) so it feels like a native
    part of the Pattern Files product line, not a bolted-on opt-in page. */
-.pfc-hero { padding-bottom: 70px; }
+.pfc-hero { padding-bottom: 84px; background: radial-gradient(circle at 77% 40%, rgba(228,111,36,.16), transparent 28rem); }
 .pfc-sub { margin-top: 18px; }
 .pfc-stack { min-height: 320px; }
 .pfc-cover { right: 8%; bottom: 0; }
@@ -79,5 +79,20 @@
 .pfc-email-input:focus { outline: 1px solid var(--orange-hot); }
 .pfc-honeypot { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .pfc-download { display: block; margin: 34px auto 0; }
-@media (max-width: 900px) { .product-hero-grid, .section-intro, .split-grid, .product-checkout-section { grid-template-columns: 1fr; gap: 45px; } .file-grid { grid-template-columns: repeat(3, 1fr); } .pfc-steps { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 620px) { .commerce-shell { width: min(100% - 30px, 1120px); } .commerce-header nav { display: none; } .product-hero { padding: 78px 0 72px; } .product-hero h1, .order-state h1 { font-size: 64px; } .product-actions { align-items: flex-start; flex-direction: column; } .file-grid { grid-template-columns: 1fr; } .checkout-card { padding: 25px; } .footer-line { align-items: flex-start; flex-direction: column; } .pfc-steps { grid-template-columns: 1fr; } .pfc-stack { min-height: 240px; } }
+.pfc-cover-art { position: relative; max-width: 460px; margin-inline: auto; transform: rotate(1.8deg); }
+.pfc-cover-art::before { content: ""; position: absolute; inset: 4% -4% -4% 5%; border: 1px solid rgba(228,111,36,.5); background: #070708; transform: rotate(-4deg); }
+.pfc-cover-art img { position: relative; z-index: 1; display: block; width: 100%; border: 1px solid rgba(255,255,255,.22); box-shadow: 0 32px 90px rgba(0,0,0,.72), 0 0 55px rgba(228,111,36,.14); }
+.pfc-stamp { position: absolute; z-index: 2; right: -24px; bottom: 30px; padding: 10px 14px; border: 1px solid var(--orange-hot); background: #0b0b0d; color: var(--orange-hot); font: 10px var(--font-geist-mono), monospace; letter-spacing: .16em; transform: rotate(-3deg); }
+.pfc-reveal-grid { display: grid; grid-template-columns: .9fr 1.1fr; gap: 70px; align-items: start; margin: 25px 0 80px; }
+.pfc-reveal-grid h2 { font-size: clamp(48px, 6vw, 82px); }
+.pfc-points { border-top: 1px solid var(--line); }
+.pfc-points p { display: grid; grid-template-columns: .62fr 1fr; gap: 24px; margin: 0; padding: 22px 0; border-bottom: 1px solid var(--line); }
+.pfc-points strong { color: var(--white); font-size: 13px; text-transform: uppercase; letter-spacing: .08em; }
+.pfc-points span { color: var(--muted); font-size: 13px; line-height: 1.55; }
+.pfc-visible-label { color: var(--muted); font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.pfc-proof-band { margin: 70px 0 10px; padding: 34px; border: 1px solid var(--line); background: linear-gradient(120deg, rgba(228,111,36,.12), rgba(255,255,255,.02)); text-align: center; }
+.pfc-proof-band p { margin: 0 0 8px; font: 30px Impact, "Arial Narrow", sans-serif; text-transform: uppercase; letter-spacing: .03em; }
+.pfc-proof-band span { color: var(--muted); font-size: 14px; }
+.pfc-thanks .order-state { max-width: 900px; }
+@media (max-width: 900px) { .product-hero-grid, .section-intro, .split-grid, .product-checkout-section, .pfc-reveal-grid { grid-template-columns: 1fr; gap: 45px; } .file-grid { grid-template-columns: repeat(3, 1fr); } .pfc-steps { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 620px) { .commerce-shell { width: min(100% - 30px, 1120px); } .commerce-header nav { display: none; } .product-hero { padding: 78px 0 72px; } .product-hero h1, .order-state h1 { font-size: 64px; } .product-actions { align-items: flex-start; flex-direction: column; } .file-grid { grid-template-columns: 1fr; } .checkout-card { padding: 25px; } .footer-line { align-items: flex-start; flex-direction: column; } .pfc-steps { grid-template-columns: 1fr; } .pfc-stack { min-height: 240px; } .pfc-cover-art { width: 88%; } .pfc-stamp { right: -12px; } .pfc-points p { grid-template-columns: 1fr; gap: 8px; } }

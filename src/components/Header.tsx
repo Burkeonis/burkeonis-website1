@@ -1,6 +1,4 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
-
 export const Header: React.FC = () => {
   return (
     <header className="flex items-center justify-between border-b border-charred pb-4">
@@ -20,13 +18,13 @@ export const Header: React.FC = () => {
 
       <div className="flex items-center gap-6">
         <nav className="hidden md:flex gap-4 text-xs tracking-[0.18em] uppercase">
-          <NavLink to="/" className="hover:text-ember">Home</NavLink>
-          <NavLink to="/music" className="hover:text-ember">Music</NavLink>
-          <NavLink to="/self-mirror" className="hover:text-ember">Self Mirror</NavLink>
-          <NavLink to="/tools" className="hover:text-ember">Tools</NavLink>
-          <NavLink to="/shadow-work" className="hover:text-ember">Shadow Work</NavLink>
-          <NavLink to="/about" className="hover:text-ember">About</NavLink>
-          <NavLink to="/updates" className="hover:text-ember">Updates</NavLink>
+          <a href="/" className="hover:text-ember">Home</a>
+          <a href="/music" className="hover:text-ember">Music</a>
+          <a href="/self-mirror" className="hover:text-ember">Self Mirror</a>
+          <a href="/tools" className="hover:text-ember">Tools</a>
+          <a href="/shadow-work" className="hover:text-ember">Shadow Work</a>
+          <a href="/about" className="hover:text-ember">About</a>
+          <a href="/updates" className="hover:text-ember">Updates</a>
         </nav>
 
         <a

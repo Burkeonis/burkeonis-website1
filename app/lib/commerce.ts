@@ -39,6 +39,7 @@ export type CommerceBindings = {
   COMMERCE_DB?: D1Database;
   PRODUCT_FILES?: R2Bucket;
   STRIPE_SELF_MIRROR_PRO_PRICE_ID?: string;
+  SELF_MIRROR_SESSION_SECRET?: string;
 };
 
 export type SelfMirrorProEntitlement = {
@@ -337,6 +338,31 @@ export async function verifyDownloadToken(token: string, secret: string): Promis
   const payload = `${checkoutSessionId}.${expiresAt}`;
   const expected = await hmac(secret, payload);
   return safeEqual(signature, expected) ? checkoutSessionId : null;
+}
+
+
+export async function createSelfMirrorSessionToken(customerId: string, secret: string, validForSeconds = 30 * 24 * 60 * 60): Promise<string> {
+  const expiresAt = Math.floor(Date.now() / 1000) + validForSeconds;
+  const payload = `${base64Url(new TextEncoder().encode(customerId))}.${expiresAt}`;
+  return `${payload}.${await hmac(secret, payload)}`;
+}
+
+export async function verifySelfMirrorSessionToken(token: string, secret: string): Promise<string | null> {
+  const [encodedCustomerId, expiresAtValue, signature, ...remainder] = token.split(".");
+  if (!encodedCustomerId || !expiresAtValue || !signature || remainder.length) return null;
+  const expiresAt = Number(expiresAtValue);
+  if (!Number.isSafeInteger(expiresAt) || expiresAt < Math.floor(Date.now() / 1000)) return null;
+  const payload = `${encodedCustomerId}.${expiresAt}`;
+  if (!safeEqual(signature, await hmac(secret, payload))) return null;
+  try {
+    const normalized = encodedCustomerId.replace(/-/g, "+").replace(/_/g, "/");
+    const padded = normalized + "=".repeat((4 - normalized.length % 4) % 4);
+    const bytes = Uint8Array.from(atob(padded), (character) => character.charCodeAt(0));
+    const customerId = new TextDecoder().decode(bytes);
+    return customerId.startsWith("cus_") ? customerId : null;
+  } catch {
+    return null;
+  }
 }
 
 export async function verifyStripeSignature(

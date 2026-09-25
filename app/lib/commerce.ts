@@ -6,6 +6,7 @@ type R2Bucket = { get: (key: string) => Promise<R2ObjectBody | null> };
 
 export const PRIMARY_PRODUCT_CODE = "pattern-files-core";
 export const ORDER_BUMP_CODE = "shadow-work-protocol";
+export const SELF_MIRROR_PRO_CODE = "self-mirror-pro";
 
 export const PAID_PRODUCTS = {
   "build-your-nexus": { title: "Build Your Nexus Field Guide", priceId: "price_1UCdk7CE9Tb0E1aS57w9EnBW", objectKey: "Burkeonis_Build_Your_Nexus_Field_Guide.pdf", filename: "Burkeonis_Build_Your_Nexus_Field_Guide.pdf" },
@@ -37,6 +38,16 @@ export type CommerceBindings = {
   PATTERN_FILES_WITH_SHADOW_OBJECT_KEY?: string;
   COMMERCE_DB?: D1Database;
   PRODUCT_FILES?: R2Bucket;
+  STRIPE_SELF_MIRROR_PRO_PRICE_ID?: string;
+};
+
+export type SelfMirrorProEntitlement = {
+  customerId: string;
+  email: string | null;
+  subscriptionId: string;
+  status: string;
+  currentPeriodEnd: string | null;
+  updatedAt: string;
 };
 
 export type PaidOrder = {
@@ -133,6 +144,14 @@ export async function ensureCommerceSchema(db: D1Database): Promise<void> {
       )`,
     ),
   ]);
+  await db.prepare(`CREATE TABLE IF NOT EXISTS self_mirror_pro_entitlements (
+    stripe_customer_id TEXT PRIMARY KEY,
+    customer_email TEXT,
+    stripe_subscription_id TEXT UNIQUE NOT NULL,
+    status TEXT NOT NULL,
+    current_period_end TEXT,
+    updated_at TEXT NOT NULL
+  )`).run();
   const columns = await db.prepare("PRAGMA table_info(commerce_orders)").all<{ name: string }>();
   if (!columns.results.some((column) => column.name === "product_code")) {
     await db.prepare("ALTER TABLE commerce_orders ADD COLUMN product_code TEXT NOT NULL DEFAULT 'pattern-files-core'").run();
@@ -206,6 +225,37 @@ export async function getPaidOrder(db: D1Database, checkoutSessionId: string): P
     productCode: result.product_code || PRIMARY_PRODUCT_CODE,
     fulfilledAt: result.fulfilled_at,
   };
+}
+
+export function isSelfMirrorProActive(status: string): boolean {
+  return status === "active" || status === "trialing";
+}
+
+export async function upsertSelfMirrorProEntitlement(
+  db: D1Database,
+  input: { customerId: string; email?: string | null; subscriptionId: string; status: string; currentPeriodEnd?: string | null },
+): Promise<void> {
+  await ensureCommerceSchema(db);
+  await db.prepare(`INSERT INTO self_mirror_pro_entitlements
+    (stripe_customer_id, customer_email, stripe_subscription_id, status, current_period_end, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?)
+    ON CONFLICT(stripe_customer_id) DO UPDATE SET
+      customer_email=excluded.customer_email,
+      stripe_subscription_id=excluded.stripe_subscription_id,
+      status=excluded.status,
+      current_period_end=excluded.current_period_end,
+      updated_at=excluded.updated_at`).bind(
+        input.customerId, input.email ?? null, input.subscriptionId, input.status, input.currentPeriodEnd ?? null, new Date().toISOString()
+      ).run();
+}
+
+export async function getSelfMirrorProEntitlement(db: D1Database, customerId: string): Promise<SelfMirrorProEntitlement | null> {
+  await ensureCommerceSchema(db);
+  const row = await db.prepare(`SELECT stripe_customer_id, customer_email, stripe_subscription_id, status, current_period_end, updated_at
+    FROM self_mirror_pro_entitlements WHERE stripe_customer_id = ?`).bind(customerId).first<{
+      stripe_customer_id:string; customer_email:string|null; stripe_subscription_id:string; status:string; current_period_end:string|null; updated_at:string;
+    }>();
+  return row ? { customerId:row.stripe_customer_id, email:row.customer_email, subscriptionId:row.stripe_subscription_id, status:row.status, currentPeriodEnd:row.current_period_end, updatedAt:row.updated_at } : null;
 }
 
 export async function recordDelivery(db: D1Database, checkoutSessionId: string): Promise<void> {

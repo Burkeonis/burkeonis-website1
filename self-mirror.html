@@ -110,6 +110,9 @@
  .sm-sidebar small{display:block!important}
 }
 
+
+.sm-choice-row{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}.sm-choice-row button{min-height:25px;padding:4px 7px;background:#100e0b;color:#9f9588;border:1px solid #49372b;font:700 7px "Courier New",monospace;cursor:pointer}.sm-choice-row button.selected{background:#d24a2d;color:#fff;border-color:#ef6849}.sm-pro-cta{display:flex;align-items:center;justify-content:center;min-height:34px;padding:6px 10px;background:#d24a2d;color:#fff!important;border:1px solid #ef6849;font:800 7px "Courier New",monospace;letter-spacing:.06em;text-align:center}
+
 </style>
 <script defer="" src="assets/vendor/tesseract/tesseract.min.js"></script>
 <script defer="" src="self-mirror.js"></script>
@@ -128,7 +131,7 @@
 <div class="sm-quick" id="quickMirror">
 <div class="sm-quick-copy"><p class="red-label">QUICK MIRROR / FREE</p><h2>WHAT LOOP ARE YOU IN?</h2><p>One sentence. One possible pattern. One next move. No account required.</p></div>
 <div class="sm-quick-box"><label for="quickInput">WHAT'S HAPPENING RIGHT NOW?</label><div class="sm-quick-entry"><input id="quickInput" maxlength="420" placeholder="I keep saying I'm done, but I still check if they replied…"/><button id="quickRun" type="button">MIRROR IT →</button></div><small id="quickMeta">PRIVATE · RUNS IN THIS BROWSER · NOT A DIAGNOSIS</small></div>
-<div class="sm-quick-result" id="quickResult" hidden><div><small>POSSIBLE LOOP</small><strong id="quickPattern"></strong></div><div><small>THE MIRROR</small><p id="quickCallout"></p></div><div><small>NEXT MOVE</small><p id="quickMove"></p></div><div class="sm-quick-actions"><button id="quickDeeper" type="button">GO DEEPER IN SELF MIRROR</button><button id="quickShare" type="button">SHARE RESULT</button></div></div>
+<div class="sm-quick-result" id="quickResult" hidden><div><small>POSSIBLE LOOP</small><strong id="quickPattern"></strong></div><div><small>THE MIRROR</small><p id="quickCallout"></p></div><div><small>NEXT MOVE</small><p id="quickMove"></p><div class="sm-choice-row" id="quickChoices"><button type="button" data-choice="WAIT">WAIT</button><button type="button" data-choice="BOUNDARY">BOUNDARY</button><button type="button" data-choice="ASK">ASK</button><button type="button" data-choice="OWN IT">OWN IT</button></div></div><div class="sm-quick-actions"><button id="quickDeeper" type="button">GO DEEPER IN SELF MIRROR</button><button id="quickShare" type="button">SHARE RESULT</button><a class="sm-pro-cta" href="/api/checkout?product=self-mirror-field-test">GET THE SELF MIRROR FIELD TEST →</a></div></div>
 </div>
 <section class="mirror-shell" id="reflect">
 <div class="mirror-grid">

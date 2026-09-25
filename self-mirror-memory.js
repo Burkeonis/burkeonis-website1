@@ -155,7 +155,7 @@
       `Relationship profiles: ${Object.values(profile.relationships).map((person) => `${person.name}: user gives ${person.myGiveLanguage || 'unknown'}, user receives ${person.myReceiveLanguage || 'unknown'}, they give ${person.theirGiveLanguage || 'unknown'}, they receive ${person.theirReceiveLanguage || 'unknown'}`).join('; ') || 'none'}`,
       `Recent relationship events: ${profile.relationshipEvents.slice(0, 10).map((event) => `${event.date.slice(0, 10)} ${event.person} ${event.type}`).join('; ') || 'none'}`,
       `Recent user-stated evidence: ${profile.sessions.slice(0, 5).map((item) => `[${item.evidenceType}] ${item.sourceExcerpt.slice(0, 220)}`).join('\n')}`,
-      'Treat these as clues, not diagnoses. Separate facts from inference and explain the basis for every insight.',
+      'Treat saved history and machine-detected patterns as context clues, not diagnoses or automatically confirmed truth. Separate facts, user reports, observation, interpretation, possible patterns, contradictions, strengths, goals, and unknowns. Explain the basis for every inference.',
     ].join('\n');
   }
 
@@ -168,7 +168,7 @@
     const detectorInstruction = mode === 'bullshit'
       ? 'BULLSHIT DETECTOR RULE: Test both the external claim and the user’s preferred interpretation. Separate evidence, story, pattern, contradiction, missing information, disconfirming evidence, and reality check. Manipulation language is a signal, never automatic proof. End with only SUPPORTED, PARTLY SUPPORTED, UNPROVEN, CONTRADICTED, or NOT ENOUGH INFORMATION.'
       : '';
-    const prompt = `You are Self Mirror by Burkeonis. You do not flatter, comfort, diagnose, moralize, or pretend certainty. Reflect the user accurately. Separate FACTS, PATTERNS, POSSIBILITIES, BLIND SPOTS, CONTRADICTIONS, and NEXT STEP. Mark confidence LOW, MEDIUM, or HIGH and state the evidence for each inference. Mode: ${mode.toUpperCase()}. Submitted worksheet context: ${lens.toUpperCase()}.\n\n${abyssInstruction}\n${detectorInstruction}\n\nWORKSHEET HANDLING:\n${protocolPrompts[lens]}\nDo not replace, rewrite, or claim to complete the worksheet. Analyze only the answers the user actually supplied.\n\nPRIVATE PROFILE CONTEXT:\n${profileContext()}\n\nCURRENT ACCOUNT OR COMPLETED WORKSHEET ANSWERS:\n${text}`;
+    const prompt = `You are Self Mirror by Burkeonis. You do not flatter, comfort, diagnose, moralize, or pretend certainty. Reflect the user accurately. In Mirror mode use the structure FACTS, FEELINGS, INTERPRETATIONS, PATTERNS, CONTRADICTIONS, STRENGTHS, CONTROL, NEXT ACTION, QUESTION. In Mediator mode separate AGREED FACTS, DISPUTED FACTS, INTERPRETATIONS, UNKNOWNS, RESPONSIBILITY, ESCALATION, BOUNDARIES, REPAIR, NEXT STEP. In Abyss mode go beneath the surface without treating interpretation as fact. Mark important inferences LOW, MEDIUM, or HIGH confidence and state the evidence. Mode: ${mode.toUpperCase()}. Submitted worksheet context: ${lens.toUpperCase()}.\n\n${abyssInstruction}\n${detectorInstruction}\n\nWORKSHEET HANDLING:\n${protocolPrompts[lens]}\nDo not replace, rewrite, or claim to complete the worksheet. Analyze only the answers the user actually supplied.\n\nPRIVATE PROFILE CONTEXT:\n${profileContext()}\n\nCURRENT ACCOUNT OR COMPLETED WORKSHEET ANSWERS:\n${text}`;
     const response = await fetch('http://127.0.0.1:11434/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

@@ -1,3 +1,6 @@
+type D1PreparedStatement = { bind: (...values: unknown[]) => D1PreparedStatement; run: () => Promise<unknown> };
+type D1Database = { prepare: (query: string) => D1PreparedStatement };
+
 // Lead capture for free-protocol landing pages (e.g. /first-pattern-file).
 // Shares the same D1 database as commerce (COMMERCE_DB) — no new binding
 // needed. Deliberately minimal: this is a mailing-list seed with UTM source

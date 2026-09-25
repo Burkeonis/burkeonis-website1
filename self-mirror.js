@@ -18,18 +18,18 @@
   const modeCopy = {
     mirror: {
       title: 'MIRROR',
-      body: 'Use this when you want the gap between your words, actions, standards, and excuses exposed. It focuses on contradictions, ownership, and the next decision.',
-      use: 'BEST FOR: personal accountability, repeated patterns, mixed signals, avoidance.',
+      body: 'Separate facts from feelings, interpretations, assumptions, contradictions, recurring patterns, blind spots, strengths, what is in your control, and the next honest action.',
+      use: 'BEST FOR: seeing what is actually happening without polishing yourself into the hero or the other person into the villain.',
     },
     mediator: {
       title: 'MEDIATOR',
-      body: 'Use this for conflict. It separates facts from assumptions, shows where escalation happened, and examines every side without declaring a winner.',
-      use: 'BEST FOR: arguments, relationship conflict, texts, misunderstandings, repair.',
+      body: 'Two views. One cleaner picture. Separate agreed facts, disputed claims, interpretations, unknowns, responsibility, escalation, boundaries, and repair possibilities without automatically taking a side.',
+      use: 'BEST FOR: arguments, relationship conflict, screenshots, texts, misunderstandings, boundaries, and repair.',
     },
     abyss: {
       title: 'ABYSS',
-      body: 'The deepest Burkeonis mode. It does not stop at what happened. It exposes the identity being protected, the private contract underneath the pattern, the payoff of staying stuck, and the truth that would destroy the excuse.',
-      use: 'BEST FOR: the pattern you understand but still repeat, the pain you defend, and the truth you keep negotiating around.',
+      body: 'No comfort. No invented certainty. Examine fear, shame, control, abandonment, grief, anger, avoidance, addiction loops, identity conflict, self-sabotage, protective behavior, consequences, and the move that breaks the loop.',
+      use: 'BEST FOR: the pattern you already understand but still repeat. Interpretations remain interpretations unless the evidence supports more.',
     },
     builder: {
       title: 'BUILDER',

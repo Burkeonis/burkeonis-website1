@@ -1,8 +1,9 @@
-import { ORDER_BUMP_CODE, PRIMARY_PRODUCT_CODE, getCommerceBindings, getPaidProduct, recordAnalyticsEvent, recordPaidOrder, verifyStripeSignature } from "../../../lib/commerce";
+import { ORDER_BUMP_CODE, PRIMARY_PRODUCT_CODE, SELF_MIRROR_PRO_CODE, getCommerceBindings, getPaidProduct, recordAnalyticsEvent, recordPaidOrder, upsertSelfMirrorProEntitlement, verifyStripeSignature } from "../../../lib/commerce";
 
 export const dynamic = "force-dynamic";
 
-type StripeEvent = { id?: string; type?: string; data?: { object?: { id?: string } } };
+type StripeEvent = { id?: string; type?: string; data?: { object?: { id?: string; customer?: string | null; status?: string; current_period_end?: number; metadata?: Record<string,string|undefined> | null } } };
+type StripeSubscription = { id?: string; customer?: string | null; status?: string; current_period_end?: number; metadata?: Record<string,string|undefined> | null };
 type StripeCheckoutSession = { id?: string; livemode?: boolean; payment_status?: string; customer?: string | null; customer_details?: { email?: string | null } | null; metadata?: Record<string, string | undefined> | null };
 
 function text(body: string, status: number): Response {
@@ -30,6 +31,20 @@ export async function POST(request: Request): Promise<Response> {
   let event: StripeEvent;
   try { event = JSON.parse(rawPayload) as StripeEvent; } catch { return text("Invalid webhook payload.", 400); }
 
+  const subscriptionEvent = event.type === "customer.subscription.created" || event.type === "customer.subscription.updated" || event.type === "customer.subscription.deleted";
+  if (subscriptionEvent) {
+    const subscription = event.data?.object as StripeSubscription | undefined;
+    if (!subscription?.id || !subscription.customer || !subscription.status || subscription.metadata?.product_code !== SELF_MIRROR_PRO_CODE) return text("Ignored subscription event.", 200);
+    await upsertSelfMirrorProEntitlement(bindings.COMMERCE_DB, {
+      customerId: subscription.customer,
+      subscriptionId: subscription.id,
+      status: subscription.status,
+      currentPeriodEnd: subscription.current_period_end ? new Date(subscription.current_period_end * 1000).toISOString() : null,
+    });
+    await recordAnalyticsEvent(bindings.COMMERCE_DB, { eventName: `self_mirror_pro_${subscription.status}`, productCode: SELF_MIRROR_PRO_CODE });
+    return text("Received.", 200);
+  }
+
   const supportedEvent = event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded";
   if (!supportedEvent) return text("Ignored event.", 200);
 
@@ -39,9 +54,14 @@ export async function POST(request: Request): Promise<Response> {
 
   const session = await retrieveSession(sessionId, bindings.STRIPE_SECRET_KEY);
   const productCode = session?.metadata?.product_code;
-  const eligibleProduct = productCode === PRIMARY_PRODUCT_CODE || Boolean(getPaidProduct(productCode));
+  const eligibleProduct = productCode === PRIMARY_PRODUCT_CODE || productCode === SELF_MIRROR_PRO_CODE || Boolean(getPaidProduct(productCode));
   if (!session || session.id !== sessionId || session.livemode !== isLiveMode || session.payment_status !== "paid" || !eligibleProduct || !productCode) {
     return text("Checkout session is not eligible for fulfillment.", 400);
+  }
+
+  if (productCode === SELF_MIRROR_PRO_CODE) {
+    await recordAnalyticsEvent(bindings.COMMERCE_DB, { eventName: "self_mirror_pro_checkout_completed", productCode: SELF_MIRROR_PRO_CODE });
+    return text("Received.", 200);
   }
 
   const addShadowWork = session.metadata?.includes_shadow_work === "true" && session.metadata?.order_bump_code === ORDER_BUMP_CODE;

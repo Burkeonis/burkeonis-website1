@@ -10,6 +10,8 @@
   const dailyPrompt=document.getElementById('dailyPrompt');
   const dailyStreak=document.getElementById('dailyStreak');
   const historyKey='selfmirror.quick.v1';
+  function track(event){try{fetch('/api/analytics',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({event,product:'self-mirror-field-test'}),keepalive:true}).catch(()=>{});}catch{}}
+  try{const seen='selfmirror.analytics.seen';track(localStorage.getItem(seen)?'self_mirror_returned':'self_mirror_viewed');localStorage.setItem(seen,'1');}catch{track('self_mirror_viewed');}
   function getHistory(){try{return JSON.parse(localStorage.getItem(historyKey)||'{"runs":[]}');}catch{return {runs:[]};}}
   function refreshHistory(){
     const runs=(getHistory().runs||[]).slice(0,6);
@@ -34,7 +36,7 @@
     const hit=rules.find(r=>r.rx.test(text))||fallback;
     selectedChoice=''; choices?.querySelectorAll('button').forEach(b=>b.classList.remove('selected'));
     last={...hit,text};
-    pattern.textContent=hit.name; callout.textContent=hit.call; move.textContent=hit.move; result.hidden=false;
+    pattern.textContent=hit.name; callout.textContent=hit.call; move.textContent=hit.move; result.hidden=false; track('self_mirror_quick_completed');
     try{
       const key='selfmirror.quick.v1', data=JSON.parse(localStorage.getItem(key)||'{"runs":[]}');
       data.runs=[{at:new Date().toISOString(),pattern:hit.name},...(data.runs||[])].slice(0,30);
@@ -42,14 +44,15 @@
     }catch{}
   }
   run.addEventListener('click',mirror);
-  choices?.addEventListener('click',e=>{const b=e.target.closest('button[data-choice]');if(!b||!last)return;selectedChoice=b.dataset.choice||'';choices.querySelectorAll('button').forEach(x=>x.classList.toggle('selected',x===b));try{const key='selfmirror.quick.v1',data=JSON.parse(localStorage.getItem(key)||'{"runs":[]}');if(data.runs?.[0])data.runs[0].choice=selectedChoice;localStorage.setItem(key,JSON.stringify(data));refreshHistory();}catch{}});
-  dailyUse?.addEventListener('click',()=>{input.value='Today: ';input.scrollIntoView({behavior:'smooth',block:'center'});input.focus();});
+  choices?.addEventListener('click',e=>{const b=e.target.closest('button[data-choice]');if(!b||!last)return;selectedChoice=b.dataset.choice||'';track('self_mirror_next_move_selected');choices.querySelectorAll('button').forEach(x=>x.classList.toggle('selected',x===b));try{const key='selfmirror.quick.v1',data=JSON.parse(localStorage.getItem(key)||'{"runs":[]}');if(data.runs?.[0])data.runs[0].choice=selectedChoice;localStorage.setItem(key,JSON.stringify(data));refreshHistory();}catch{}});
+  dailyUse?.addEventListener('click',()=>{track('self_mirror_daily_clicked');input.value='Today: ';input.scrollIntoView({behavior:'smooth',block:'center'});input.focus();});
   input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();mirror();}});
-  deeper.addEventListener('click',()=>{
+  deeper.addEventListener('click',()=>{track('self_mirror_deeper_clicked');
     if(last&&full){full.value=last.text;full.dispatchEvent(new Event('input',{bubbles:true}));}
     document.getElementById('reflect')?.scrollIntoView({behavior:'smooth',block:'start'}); full?.focus({preventScroll:true});
   });
-  share.addEventListener('click',async()=>{
+  document.querySelector('.sm-pro-cta')?.addEventListener('click',()=>track('self_mirror_field_test_clicked'));
+  share.addEventListener('click',async()=>{track('self_mirror_share_clicked');
     if(!last)return;
     const text='SELF MIRROR — '+last.name+'\n\n'+last.call+(selectedChoice?'\n\nMY NEXT MOVE: '+selectedChoice:'')+'\n\nWhat loop are you in?\nburkeonis.com/self-mirror';
     try{

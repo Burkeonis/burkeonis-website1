@@ -1,3 +1,5 @@
+import type { D1Database, R2Bucket } from "@cloudflare/workers-types";
+
 export const PRIMARY_PRODUCT_CODE = "pattern-files-core";
 export const ORDER_BUMP_CODE = "shadow-work-protocol";
 

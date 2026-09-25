@@ -42,6 +42,46 @@
 @media(max-width:900px){.sm-frame{grid-template-columns:1fr}.sm-sidebar{position:static;height:auto;display:flex;overflow-x:auto;padding:10px;border-right:0;border-bottom:1px solid #292c36}.sm-sidebar small{display:none}.sm-sidebar a{white-space:nowrap}.mirror-grid{grid-template-columns:1fr}.mirror-grid>aside{position:static}.mode-row{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.mode-row{grid-template-columns:1fr}.sm-workspace{padding-left:12px;padding-right:12px}}
 
+
+/* SELF MIRROR PRO WEB — desktop workspace */
+:root{--pro-paper:#cfc3ab;--pro-muted:#8d8375;--pro-line:#4b3325;--pro-ember:#d24a2d;--pro-panel:#0d0b08}
+.sm-app{background:radial-gradient(circle at 76% 12%,rgba(132,75,36,.08),transparent 24%),linear-gradient(180deg,#080807,#050504 72%);color:#d6cec0;font-family:"Courier New",Consolas,monospace}
+.sm-topbar{height:64px;padding:0 18px;background:rgba(7,7,6,.97);border-bottom:1px solid #3a2a20}
+.sm-topbar .brand{font-family:Georgia,serif;font-style:italic;letter-spacing:.04em;color:#e0d7c9}
+.sm-pro-tag{margin-left:7px;color:var(--pro-ember);font-family:"Courier New",monospace;font-style:normal;font-size:12px;letter-spacing:.12em}
+.sm-frame{grid-template-columns:220px minmax(0,1fr);min-height:calc(100vh - 64px)}
+.sm-sidebar{top:64px;height:calc(100vh - 64px);padding:14px 10px;background:linear-gradient(180deg,#0d0b08,#070706);border-right:1px solid #332419}
+.sm-sidebar a{padding:8px 10px;color:#b2a797;font-size:9px;border-radius:0}
+.sm-sidebar a:hover,.sm-sidebar a.active{background:linear-gradient(90deg,#d1c3a8,#bbae95);color:#1a1511;border-color:#7c5d45}
+.sm-sidebar a.active b{color:#7d4c31}.sm-sidebar small{margin:12px 10px 5px;color:#817567}
+.sm-workspace{padding:18px 20px 60px;overflow:visible;background:linear-gradient(90deg,rgba(255,255,255,.005),transparent 25%)}
+.sm-page-head{max-width:none;margin:0 0 14px;padding-bottom:14px;border-bottom:1px solid #3a2a20;align-items:center}
+.sm-page-head .red-label{color:var(--pro-ember)}.sm-page-head h1{font-family:Georgia,serif;font-style:italic;font-weight:500;font-size:30px;letter-spacing:.02em}.sm-page-head p{max-width:720px;font-size:11px;color:#9c9285}
+.sm-private{border-color:#4b3325;color:#9f9588;background:#0d0b08}
+.mirror-shell{width:100%;max-width:none;margin:0;padding:0}
+.mirror-grid{display:grid;grid-template-columns:minmax(640px,1.65fr) minmax(360px,.75fr);gap:14px;align-items:start}
+.mirror-panel{min-width:0;padding:18px;background:linear-gradient(180deg,#0d0b09,#090806);border:1px solid #402b1f;border-radius:0;box-shadow:inset 0 0 24px #0009,0 9px 26px #0005;overflow:hidden}
+.sm-editor-head{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;padding-bottom:12px;border-bottom:1px solid #392920}
+.sm-editor-head h2{margin:0 0 6px;font-family:Georgia,serif;font-style:italic;font-size:20px;letter-spacing:.02em}.sm-editor-head p{margin:0;max-width:660px;font-size:11px;line-height:1.5}.sm-editor-head>span{max-width:240px;color:var(--pro-ember);font-size:8px;line-height:1.5;text-align:right}
+.mode-section{margin:14px 0;padding:12px;background:#0a0907;border:1px solid #39291f;border-radius:0}
+.mode-heading{margin-bottom:9px}.mode-heading strong{font-size:9px;color:#d8cec0}.mode-heading span{font-size:8px;color:#81786d}
+.mode-row{display:grid;grid-template-columns:repeat(5,minmax(105px,1fr));gap:7px}
+.mode-row .mode-btn:last-child{grid-column:auto}.mode-btn{min-width:0;min-height:58px;padding:8px 7px;background:#100e0b;border:1px solid #3f3026;border-radius:0;color:#b9ad9e;font-size:10px;letter-spacing:.04em;overflow-wrap:normal;word-break:normal;white-space:normal}.mode-btn small{font-size:8px;line-height:1.25}.mode-btn.active{background:linear-gradient(135deg,#d1c3a8,#bbae95);color:#1a1511;border-color:#7c5d45;box-shadow:0 7px 20px #0007}.mode-btn.active small{color:#5d4939}
+.mode-explainer{margin-top:9px;padding:10px 12px;border-left:2px solid var(--pro-ember);background:#0d0b09}.mode-explainer strong{font-size:10px}.mode-explainer p{font-size:10px!important;line-height:1.45!important}.mode-use{font-size:8px}
+.sm-field{margin-top:10px}.sm-field span,.mirror-label{font-size:8px;color:#8d8375}.sm-field select{min-height:38px;background:#090806;border-color:#403229}
+.upload-zone{margin-top:10px;padding:14px;background:#090806;border-color:#4b3b30;border-radius:0}.upload-trigger{min-height:40px;background:#c8b89c;color:#19130e;border-color:#816347;font-size:9px;font-weight:700}.upload-note{font-size:9px!important;line-height:1.45!important}
+.mirror-label{margin:14px 0 7px;color:var(--pro-ember)}
+.mirror-input{min-height:190px;padding:15px;background:#d2c7b2;color:#302820;border:1px solid #8b725b;border-radius:0;font:12px/1.65 "Courier New",monospace}.mirror-input::placeholder{color:#665d53}
+.mirror-actions{margin-top:10px;gap:8px}.mirror-action{min-height:42px;padding:0 15px;background:linear-gradient(135deg,#d4c5a9,#bcae92);color:#19130e;border:1px solid #816347;font-size:9px;font-weight:800}.mirror-action.secondary{background:#100e0b;border-color:#49372b;color:#a99f92}
+.mirror-status{margin-top:8px;font-size:8px;color:#766d62}
+.sm-reflection-panel{position:sticky!important;top:78px!important;padding:14px}.sm-live-label{color:var(--pro-ember);font-size:8px;letter-spacing:.12em;margin-bottom:7px}.sm-reflection-panel h2{font-family:Georgia,serif;font-style:italic;font-size:18px;margin-bottom:10px}.mirror-output{min-height:330px!important;max-height:48vh!important;padding:14px;background:#090806;border:1px solid #392d24!important;border-radius:0;font-size:11px;line-height:1.6;color:#c6beb2;overflow:auto}
+.protocol-link{margin-top:10px;padding:12px;background:#0d0b09;border-color:#49372b;color:#ce5438;font-size:9px}.safety-note{margin-top:10px;padding:11px;background:#090806;border-color:#392d24;font-size:9px;line-height:1.5}
+.sm-section-title{max-width:none;margin:18px 0 8px;color:#817567}.sm-settings{max-width:none;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.sm-card{padding:14px;background:#0d0b09;border-color:#392d24;border-radius:0}.sm-card.wide{grid-column:span 1}.sm-card h3{font-family:Georgia,serif;font-style:italic;font-size:12px;letter-spacing:.02em}.sm-card p,.sm-toggle{font-size:10px}.sm-field input,.sm-field select{min-height:36px}.sm-card button{min-height:36px;font-size:8px}.sm-card button.primary{background:#c8b89c;color:#19130e;border-color:#816347}.memory-state.on{color:#bfae91}.profile-drawer{max-width:none;background:#090806;border-color:#392d24}
+@media(max-width:1280px){.mirror-grid{grid-template-columns:minmax(520px,1.4fr) minmax(330px,.8fr)}.mode-row{grid-template-columns:repeat(3,minmax(120px,1fr))}.sm-settings{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:980px){.sm-frame{grid-template-columns:74px minmax(0,1fr)}.sm-sidebar a{justify-content:center}.sm-sidebar a:not(.active){font-size:0}.sm-sidebar a b{font-size:12px}.sm-sidebar small{display:none}.mirror-grid{grid-template-columns:1fr}.sm-reflection-panel{position:static!important}.mode-row{grid-template-columns:repeat(3,minmax(0,1fr))}.sm-editor-head>span{display:none}}
+@media(max-width:700px){.sm-frame{grid-template-columns:1fr}.sm-sidebar{position:static;height:auto;display:flex;overflow-x:auto;padding:8px}.sm-sidebar a,.sm-sidebar a:not(.active){font-size:9px;white-space:nowrap}.sm-workspace{padding:14px 10px 50px}.sm-page-head{display:block}.mode-row{grid-template-columns:repeat(2,minmax(0,1fr))}.sm-settings{grid-template-columns:1fr}.sm-topbar .sm-status{display:none}}
+@media(max-width:480px){.mode-row{grid-template-columns:1fr}.sm-editor-head{display:block}.mirror-input{min-height:220px}}
+
 </style>
 <script defer="" src="assets/vendor/tesseract/tesseract.min.js"></script>
 <script defer="" src="self-mirror.js"></script>
@@ -51,16 +91,15 @@
 <body>
 <a class="skip-link" href="#main-content">SKIP TO CONTENT</a>
 <div class="sm-app">
-<header class="sm-topbar"><a class="brand" href="/"><span class="brand-mark"><span>B</span></span><span>SELF MIRROR</span></a><div class="sm-status"><i></i><span>PRIVATE BROWSER SESSION</span></div><a class="sm-home" href="/">BURKEONIS HOME →</a></header>
+<header class="sm-topbar"><a class="brand" href="/"><span class="brand-mark"><span>B</span></span><span>SELF MIRROR <b class="sm-pro-tag">PRO</b></span></a><div class="sm-status"><i></i><span>PRIVATE BROWSER SESSION</span></div><a class="sm-home" href="/">BURKEONIS HOME →</a></header>
 <div class="sm-frame">
 <nav class="sm-sidebar" aria-label="Self Mirror workspace"><small>REFLECT</small><a class="active" href="#reflect"><b>◉</b>MIRROR</a><a href="#modes"><b>◇</b>MEDIATOR</a><a href="#modes"><b>▽</b>ABYSS</a><small>YOUR PATTERN</small><a href="#memory"><b>□</b>MEMORY</a><a href="#profileDrawer"><b>⌁</b>TIMELINE</a><a href="#relationship"><b>!</b>TRIGGERS</a><a href="#uploadZone"><b>+</b>VAULT</a><a href="#profileDrawer"><b>◎</b>INSIGHTS</a><a href="#profileDrawer"><b>↗</b>REPORTS</a></nav>
 <main class="sm-workspace" id="main-content">
-<div class="sm-page-head"><div><p class="red-label">SELF MIRROR / PUBLIC PREVIEW</p><h1>OPEN A REFLECTION.</h1><p>Bring the situation, the screenshots, or the full conversation. Self Mirror separates facts, patterns, possibilities, blind spots, contradictions, and the next move.</p></div><span class="sm-private">LOCAL FIRST / MEMORY OPTIONAL</span></div>
+<div class="sm-page-head"><div><p class="red-label">SELF MIRROR PRO / WEB</p><h1>SEE YOURSELF. CLEARLY.</h1><p>Bring the evidence. Separate facts from assumptions. Surface patterns, contradictions, blind spots, and the next honest move.</p></div><span class="sm-private">LOCAL FIRST / MEMORY OPTIONAL</span></div>
 <section class="mirror-shell" id="reflect">
 <div class="mirror-grid">
 <section class="mirror-panel">
-<h2>NEW REFLECTION</h2>
-<p>Write what happened without polishing yourself into the hero or editing the other person into the villain.</p>
+<div class="sm-editor-head"><div><h2>NEW ANALYSIS</h2><p>Write what happened without polishing yourself into the hero or editing the other person into the villain.</p></div><span>NO ASSUMPTIONS · NO LABELS · ONLY PATTERNS</span></div>
 <div class="mode-section">
 <div class="mode-heading" id="modes"><strong>CHOOSE YOUR MODE</strong><span>SWITCH ANY TIME BEFORE RUNNING</span></div>
 <div aria-label="Self Mirror mode" class="mode-row" role="group">
@@ -87,7 +126,7 @@
 <div class="mirror-actions"><button class="mirror-action" id="analyzeBtn" type="button">RUN REFLECTION</button><button class="mirror-action secondary" id="clearBtn" type="button">CLEAR</button><button class="mirror-action secondary" id="copyBtn" type="button">COPY RESULT</button></div>
 <p class="mirror-status" id="status">PRIVATE BROWSER SESSION / NO ACCOUNT REQUIRED / NOTHING IS SAVED</p>
 </section>
-<aside class="mirror-panel"><h2>REFLECTION</h2><div class="mirror-output" id="mirrorOutput">Your reflection will appear here.
+<aside class="mirror-panel sm-reflection-panel"><div class="sm-live-label">ANALYSIS / LIVE OUTPUT</div><h2>REFLECTION</h2><div class="mirror-output" id="mirrorOutput">Your reflection will appear here.
 
 Start with facts. The mirror cannot expose what you deliberately keep outside the frame.</div><a class="protocol-link" href="/pricing"><span>SELF MIRROR NEXT STEPS</span><span>→</span></a><div class="safety-note"><strong>PRIVATE BY DEFAULT:</strong> Your text, extracted screenshot text, and results remain in this open page unless you explicitly enable local memory below. They are not uploaded to Burkeonis.</div><div class="safety-note">Self Mirror is a reflection tool, not emergency, medical, legal, or diagnostic support. Do not use it to justify threats, retaliation, surveillance, or harm.</div></aside>
 </div>

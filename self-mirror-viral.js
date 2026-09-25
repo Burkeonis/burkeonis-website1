@@ -3,7 +3,8 @@
   const input=document.getElementById('quickInput'), run=document.getElementById('quickRun'), result=document.getElementById('quickResult');
   if(!input||!run||!result)return;
   const pattern=document.getElementById('quickPattern'), callout=document.getElementById('quickCallout'), move=document.getElementById('quickMove');
-  const deeper=document.getElementById('quickDeeper'), share=document.getElementById('quickShare'), full=document.getElementById('mirrorInput');
+  const deeper=document.getElementById('quickDeeper'), share=document.getElementById('quickShare'), full=document.getElementById('mirrorInput'), choices=document.getElementById('quickChoices');
+  let selectedChoice='';
   const rules=[
     {name:'THE CHASER LOOP',rx:/check|reply|text|message|answer|respond|chase|reach out|call|waiting/i,call:'You may be looking for certainty from the same situation creating the uncertainty.',move:'Do not send the next message yet. Name what answer you are trying to force.'},
     {name:'THE EXIT LOOP',rx:/leave|done|over|walk away|break up|quit|end it/i,call:'Your words point toward leaving. Check whether your next behavior actually moves you away from the loop.',move:'Choose one observable boundary that matches what you said.'},
@@ -18,6 +19,7 @@
     const text=input.value.trim();
     if(text.length<12){input.focus();return;}
     const hit=rules.find(r=>r.rx.test(text))||fallback;
+    selectedChoice=''; choices?.querySelectorAll('button').forEach(b=>b.classList.remove('selected'));
     last={...hit,text};
     pattern.textContent=hit.name; callout.textContent=hit.call; move.textContent=hit.move; result.hidden=false;
     try{
@@ -27,6 +29,7 @@
     }catch{}
   }
   run.addEventListener('click',mirror);
+  choices?.addEventListener('click',e=>{const b=e.target.closest('button[data-choice]');if(!b||!last)return;selectedChoice=b.dataset.choice||'';choices.querySelectorAll('button').forEach(x=>x.classList.toggle('selected',x===b));try{const key='selfmirror.quick.v1',data=JSON.parse(localStorage.getItem(key)||'{"runs":[]}');if(data.runs?.[0])data.runs[0].choice=selectedChoice;localStorage.setItem(key,JSON.stringify(data));}catch{}});
   input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();mirror();}});
   deeper.addEventListener('click',()=>{
     if(last&&full){full.value=last.text;full.dispatchEvent(new Event('input',{bubbles:true}));}
@@ -34,7 +37,7 @@
   });
   share.addEventListener('click',async()=>{
     if(!last)return;
-    const text='SELF MIRROR — '+last.name+'\n\n'+last.call+'\n\nWhat loop are you in?\nburkeonis.com/self-mirror';
+    const text='SELF MIRROR — '+last.name+'\n\n'+last.call+(selectedChoice?'\n\nMY NEXT MOVE: '+selectedChoice:'')+'\n\nWhat loop are you in?\nburkeonis.com/self-mirror';
     try{
       if(navigator.share) await navigator.share({title:'My Self Mirror',text});
       else {await navigator.clipboard.writeText(text);share.textContent='COPIED';setTimeout(()=>share.textContent='SHARE RESULT',1500);}

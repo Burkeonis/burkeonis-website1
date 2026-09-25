@@ -50,7 +50,7 @@
 
   const link = document.createElement('a');
   link.href = '/pricing';
-  link.textContent = 'COMPARE SELF MIRROR PLANS →';
+  link.textContent = 'SELF MIRROR NEXT STEPS →';
   link.style.cssText = 'display:inline-block;margin-top:12px;color:#e19876;font:700 11px Courier New,monospace;letter-spacing:.1em';
 
   notice.append(heading, copy, link);
@@ -59,8 +59,8 @@
   function refreshNotice() {
     const remaining = remainingText();
     copy.textContent = remaining > 0
-      ? `${remaining} of ${DAILY_LIMIT} browser-only reflections remain today. Self Mirror plans include expanded access, memory, advanced analysis and connected progress.`
-      : 'Today’s public preview is complete. Compare Self Mirror plans for expanded access, memory, advanced analysis and connected progress.';
+      ? `${remaining} of ${DAILY_LIMIT} browser-only reflections remain today. Your reflection can continue with focused Self Mirror field guides and pattern work.`
+      : 'Today’s public preview is complete. Continue with the Self Mirror Field Test or focused pattern work when you are ready to go deeper.';
 
     if (remaining === 0) {
       analyzeButton.disabled = true;

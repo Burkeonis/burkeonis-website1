@@ -44,7 +44,7 @@ export async function POST(request: Request): Promise<Response> {
     return text("Checkout session is not eligible for fulfillment.", 400);
   }
 
-  const addShadowWork = session.metadata.includes_shadow_work === "true" && session.metadata.order_bump_code === ORDER_BUMP_CODE;
+  const addShadowWork = session.metadata?.includes_shadow_work === "true" && session.metadata?.order_bump_code === ORDER_BUMP_CODE;
 
   await recordPaidOrder(bindings.COMMERCE_DB, {
     checkoutSessionId: sessionId,

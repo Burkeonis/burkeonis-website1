@@ -23,6 +23,25 @@
 @media(max-width:1050px){.mode-row{grid-template-columns:repeat(3,1fr)}.sm-settings{grid-template-columns:1fr 1fr}.sm-card.wide{grid-column:span 2}}
 @media(max-width:850px){.sm-frame{grid-template-columns:1fr}.sm-sidebar{position:static;height:auto;display:flex;overflow-x:auto;padding:10px;border-right:0;border-bottom:1px solid #292c36}.sm-sidebar small{display:none}.sm-sidebar a{white-space:nowrap}.sm-page-head{align-items:start}.mirror-grid{grid-template-columns:1fr}.mode-row{grid-template-columns:1fr 1fr}.sm-settings{grid-template-columns:1fr}.sm-card.wide{grid-column:auto}}
 @media(max-width:560px){.sm-topbar{padding:0 14px}.sm-status span{display:none}.sm-workspace{padding:24px 12px 60px}.sm-page-head{display:block}.sm-private{display:inline-block;margin-top:15px}.mode-row{grid-template-columns:1fr}.sm-pair{grid-template-columns:1fr}.sm-footer{flex-direction:column}}
+
+/* Self Mirror workspace layout hardening */
+.skip-link{position:fixed;left:12px;top:12px;z-index:9999;transform:translateY(-160%);padding:10px 14px;background:#fff;color:#090a0d;border:2px solid #d90429;font:700 11px 'Courier New',monospace;letter-spacing:.08em}
+.skip-link:focus{transform:translateY(0)}
+.sm-workspace{min-width:0}
+.mirror-shell{width:100%;max-width:1450px}
+.mirror-grid{display:grid;grid-template-columns:minmax(0,3fr) minmax(340px,2fr);gap:18px;align-items:start}
+.mirror-panel{min-width:0;overflow:hidden}
+.mode-section{min-width:0}
+.mode-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.mode-row .mode-btn:last-child{grid-column:auto}
+.mode-btn{width:100%;min-width:0;overflow-wrap:anywhere}
+.mirror-grid>aside{position:sticky;top:18px}
+.mirror-grid>aside .mirror-output{min-height:280px;max-height:52vh;overflow:auto}
+.protocol-link{min-width:0}
+@media(max-width:1180px){.sm-frame{grid-template-columns:180px minmax(0,1fr)}.sm-workspace{padding-left:24px;padding-right:24px}.mirror-grid{grid-template-columns:minmax(0,1.45fr) minmax(300px,1fr)}.mode-row{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:900px){.sm-frame{grid-template-columns:1fr}.sm-sidebar{position:static;height:auto;display:flex;overflow-x:auto;padding:10px;border-right:0;border-bottom:1px solid #292c36}.sm-sidebar small{display:none}.sm-sidebar a{white-space:nowrap}.mirror-grid{grid-template-columns:1fr}.mirror-grid>aside{position:static}.mode-row{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.mode-row{grid-template-columns:1fr}.sm-workspace{padding-left:12px;padding-right:12px}}
+
 </style>
 <script defer="" src="assets/vendor/tesseract/tesseract.min.js"></script>
 <script defer="" src="self-mirror.js"></script>

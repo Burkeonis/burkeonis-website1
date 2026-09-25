@@ -5,6 +5,19 @@
   const pattern=document.getElementById('quickPattern'), callout=document.getElementById('quickCallout'), move=document.getElementById('quickMove');
   const deeper=document.getElementById('quickDeeper'), share=document.getElementById('quickShare'), full=document.getElementById('mirrorInput'), choices=document.getElementById('quickChoices');
   let selectedChoice='';
+  const timeline=document.getElementById('quickTimeline');
+  const dailyUse=document.getElementById('dailyUse');
+  const dailyPrompt=document.getElementById('dailyPrompt');
+  const dailyStreak=document.getElementById('dailyStreak');
+  const historyKey='selfmirror.quick.v1';
+  function getHistory(){try{return JSON.parse(localStorage.getItem(historyKey)||'{"runs":[]}');}catch{return {runs:[]};}}
+  function refreshHistory(){
+    const runs=(getHistory().runs||[]).slice(0,6);
+    if(timeline){timeline.textContent=''; if(!runs.length){timeline.className='sm-timeline-empty';timeline.textContent='Your recent Quick Mirror patterns will appear here. Stored in this browser.';} else {timeline.className='sm-timeline-list';runs.forEach(r=>{const row=document.createElement('div');row.className='sm-timeline-item';const d=document.createElement('em');d.textContent=new Date(r.at).toLocaleDateString();const p=document.createElement('strong');p.textContent=r.pattern;const m=document.createElement('span');m.textContent=r.choice||'NO MOVE CHOSEN';row.append(d,p,m);timeline.append(row);});}}
+    const days=new Set((getHistory().runs||[]).map(r=>String(r.at||'').slice(0,10))).size;
+    if(dailyStreak)dailyStreak.textContent=days?days+' ACTIVE DAY'+(days===1?'':'S'):'RETURN TOMORROW';
+  }
+  refreshHistory();
   const rules=[
     {name:'THE CHASER LOOP',rx:/check|reply|text|message|answer|respond|chase|reach out|call|waiting/i,call:'You may be looking for certainty from the same situation creating the uncertainty.',move:'Do not send the next message yet. Name what answer you are trying to force.'},
     {name:'THE EXIT LOOP',rx:/leave|done|over|walk away|break up|quit|end it/i,call:'Your words point toward leaving. Check whether your next behavior actually moves you away from the loop.',move:'Choose one observable boundary that matches what you said.'},
@@ -25,11 +38,12 @@
     try{
       const key='selfmirror.quick.v1', data=JSON.parse(localStorage.getItem(key)||'{"runs":[]}');
       data.runs=[{at:new Date().toISOString(),pattern:hit.name},...(data.runs||[])].slice(0,30);
-      localStorage.setItem(key,JSON.stringify(data));
+      localStorage.setItem(key,JSON.stringify(data));refreshHistory();
     }catch{}
   }
   run.addEventListener('click',mirror);
-  choices?.addEventListener('click',e=>{const b=e.target.closest('button[data-choice]');if(!b||!last)return;selectedChoice=b.dataset.choice||'';choices.querySelectorAll('button').forEach(x=>x.classList.toggle('selected',x===b));try{const key='selfmirror.quick.v1',data=JSON.parse(localStorage.getItem(key)||'{"runs":[]}');if(data.runs?.[0])data.runs[0].choice=selectedChoice;localStorage.setItem(key,JSON.stringify(data));}catch{}});
+  choices?.addEventListener('click',e=>{const b=e.target.closest('button[data-choice]');if(!b||!last)return;selectedChoice=b.dataset.choice||'';choices.querySelectorAll('button').forEach(x=>x.classList.toggle('selected',x===b));try{const key='selfmirror.quick.v1',data=JSON.parse(localStorage.getItem(key)||'{"runs":[]}');if(data.runs?.[0])data.runs[0].choice=selectedChoice;localStorage.setItem(key,JSON.stringify(data));refreshHistory();}catch{}});
+  dailyUse?.addEventListener('click',()=>{input.value='Today: ';input.scrollIntoView({behavior:'smooth',block:'center'});input.focus();});
   input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();mirror();}});
   deeper.addEventListener('click',()=>{
     if(last&&full){full.value=last.text;full.dispatchEvent(new Event('input',{bubbles:true}));}

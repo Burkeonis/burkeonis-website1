@@ -1,4 +1,7 @@
-import type { D1Database, R2Bucket } from "@cloudflare/workers-types";
+type D1Result<T = Record<string, unknown>> = { results?: T[]; success?: boolean; meta?: unknown };
+type D1PreparedStatement = { bind: (...values: unknown[]) => D1PreparedStatement; run: () => Promise<unknown>; first: <T = Record<string, unknown>>() => Promise<T | null>; all: <T = Record<string, unknown>>() => Promise<D1Result<T>> };
+type D1Database = { prepare: (query: string) => D1PreparedStatement; batch: (statements: D1PreparedStatement[]) => Promise<unknown> };
+type R2Bucket = { get: (key: string) => Promise<unknown> };
 
 export const PRIMARY_PRODUCT_CODE = "pattern-files-core";
 export const ORDER_BUMP_CODE = "shadow-work-protocol";

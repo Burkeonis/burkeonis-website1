@@ -82,11 +82,24 @@
 @media(max-width:700px){.sm-frame{grid-template-columns:1fr}.sm-sidebar{position:static;height:auto;display:flex;overflow-x:auto;padding:8px}.sm-sidebar a,.sm-sidebar a:not(.active){font-size:9px;white-space:nowrap}.sm-workspace{padding:14px 10px 50px}.sm-page-head{display:block}.mode-row{grid-template-columns:repeat(2,minmax(0,1fr))}.sm-settings{grid-template-columns:1fr}.sm-topbar .sm-status{display:none}}
 @media(max-width:480px){.mode-row{grid-template-columns:1fr}.sm-editor-head{display:block}.mirror-input{min-height:220px}}
 
+
+/* VIRAL ENTRY LAYER + FINAL PRO FIT */
+.sm-workspace>.mirror-shell{width:100%!important;max-width:none!important;margin:0!important;padding:0!important}
+.sm-page-head{margin-bottom:10px!important}
+.sm-quick{display:grid;grid-template-columns:minmax(240px,.7fr) minmax(420px,1.3fr);gap:14px;width:100%;margin:0 0 14px;padding:14px;border:1px solid #402b1f;background:linear-gradient(135deg,#0d0b09,#080706);box-shadow:inset 0 0 28px #0008}
+.sm-quick-copy{padding:5px 8px}.sm-quick-copy .red-label{margin:0 0 5px;color:var(--pro-ember);font-size:8px;letter-spacing:.14em}.sm-quick-copy h2{margin:0;font-family:Georgia,serif;font-style:italic;font-weight:500;font-size:22px;color:#e0d7c9}.sm-quick-copy p:last-child{margin:6px 0 0;color:#8d8375;font-size:9px;line-height:1.45}
+.sm-quick-box{align-self:center}.sm-quick-box>label{display:block;margin-bottom:6px;color:#b9ad9e;font-size:8px;letter-spacing:.1em}.sm-quick-entry{display:grid;grid-template-columns:minmax(0,1fr) auto}.sm-quick-entry input{min-width:0;height:44px;padding:0 13px;background:#cfc3ab;color:#302820;border:1px solid #8b725b;outline:none;font:11px "Courier New",monospace}.sm-quick-entry button{padding:0 17px;background:#d24a2d;color:#fff;border:1px solid #ef6849;font:800 9px "Courier New",monospace;letter-spacing:.08em;cursor:pointer}.sm-quick-box>small{display:block;margin-top:5px;color:#6f675e;font-size:7px;letter-spacing:.07em}
+.sm-quick-result{grid-column:1/-1;display:grid;grid-template-columns:.65fr 1.35fr 1fr auto;gap:10px;padding-top:12px;border-top:1px solid #392920}.sm-quick-result[hidden]{display:none}.sm-quick-result>div{padding:8px 10px;border-left:1px solid #392920}.sm-quick-result small{display:block;color:#7f7569;font-size:7px;letter-spacing:.12em}.sm-quick-result strong{display:block;margin-top:5px;color:#d24a2d;font:italic 17px Georgia,serif}.sm-quick-result p{margin:5px 0 0;color:#bdb3a5;font-size:9px;line-height:1.45}.sm-quick-actions{display:flex;flex-direction:column;gap:6px;border-left:0!important}.sm-quick-actions button{min-height:34px;padding:6px 10px;background:#c8b89c;color:#19130e;border:1px solid #816347;font:800 7px "Courier New",monospace;letter-spacing:.06em;cursor:pointer}.sm-quick-actions button+button{background:#100e0b;color:#b9ad9e;border-color:#49372b}
+@media(min-width:981px){.sm-sidebar a{font-size:9px!important;justify-content:flex-start!important}.sm-sidebar a b{font-size:12px!important}.sm-sidebar small{display:block!important}}
+@media(max-width:980px){.sm-quick{grid-template-columns:1fr}.sm-quick-result{grid-template-columns:1fr 1fr}.sm-quick-actions{flex-direction:row}}
+@media(max-width:700px){.sm-quick-entry{grid-template-columns:1fr}.sm-quick-entry button{min-height:42px}.sm-quick-result{grid-template-columns:1fr}.sm-quick-actions{flex-direction:column}}
+
 </style>
 <script defer="" src="assets/vendor/tesseract/tesseract.min.js"></script>
 <script defer="" src="self-mirror.js"></script>
 <script defer="" src="self-mirror-memory.js"></script>
 <script defer="" src="self-mirror-access.js"></script>
+<script defer="" src="self-mirror-viral.js"></script>
 </head>
 <body>
 <a class="skip-link" href="#main-content">SKIP TO CONTENT</a>
@@ -96,6 +109,11 @@
 <nav class="sm-sidebar" aria-label="Self Mirror workspace"><small>REFLECT</small><a class="active" href="#reflect"><b>◉</b>MIRROR</a><a href="#modes"><b>◇</b>MEDIATOR</a><a href="#modes"><b>▽</b>ABYSS</a><small>YOUR PATTERN</small><a href="#memory"><b>□</b>MEMORY</a><a href="#profileDrawer"><b>⌁</b>TIMELINE</a><a href="#relationship"><b>!</b>TRIGGERS</a><a href="#uploadZone"><b>+</b>VAULT</a><a href="#profileDrawer"><b>◎</b>INSIGHTS</a><a href="#profileDrawer"><b>↗</b>REPORTS</a></nav>
 <main class="sm-workspace" id="main-content">
 <div class="sm-page-head"><div><p class="red-label">SELF MIRROR PRO / WEB</p><h1>SEE YOURSELF. CLEARLY.</h1><p>Bring the evidence. Separate facts from assumptions. Surface patterns, contradictions, blind spots, and the next honest move.</p></div><span class="sm-private">LOCAL FIRST / MEMORY OPTIONAL</span></div>
+<div class="sm-quick" id="quickMirror">
+<div class="sm-quick-copy"><p class="red-label">QUICK MIRROR / FREE</p><h2>WHAT LOOP ARE YOU IN?</h2><p>One sentence. One possible pattern. One next move. No account required.</p></div>
+<div class="sm-quick-box"><label for="quickInput">WHAT'S HAPPENING RIGHT NOW?</label><div class="sm-quick-entry"><input id="quickInput" maxlength="420" placeholder="I keep saying I'm done, but I still check if they replied…"/><button id="quickRun" type="button">MIRROR IT →</button></div><small id="quickMeta">PRIVATE · RUNS IN THIS BROWSER · NOT A DIAGNOSIS</small></div>
+<div class="sm-quick-result" id="quickResult" hidden><div><small>POSSIBLE LOOP</small><strong id="quickPattern"></strong></div><div><small>THE MIRROR</small><p id="quickCallout"></p></div><div><small>NEXT MOVE</small><p id="quickMove"></p></div><div class="sm-quick-actions"><button id="quickDeeper" type="button">GO DEEPER IN SELF MIRROR</button><button id="quickShare" type="button">SHARE RESULT</button></div></div>
+</div>
 <section class="mirror-shell" id="reflect">
 <div class="mirror-grid">
 <section class="mirror-panel">

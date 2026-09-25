@@ -14,9 +14,5 @@
 /apps                 /self-mirror      301
 /apps/                /self-mirror      301
 /apps.html            /self-mirror      301
-/atlas                /self-mirror      301
-/atlas/               /self-mirror      301
-/atlas.html           /self-mirror      301
-/atlas/*              /self-mirror      301
 /sigil-foundry        /tools            301
 /sigil-foundry.html   /tools            301

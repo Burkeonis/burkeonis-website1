@@ -11,6 +11,7 @@
     "html_handling": "auto-trailing-slash",
     "not_found_handling": "404-page"
   },
+  "ai": { "binding": "AI" },
   "vars": {
     "STRIPE_PATTERN_FILES_PRICE_ID": "price_1U69nWCE9Tb0E1aSYa9k0nHI",
     "STRIPE_SHADOW_WORK_PRICE_ID": "price_1U69tYCE9Tb0E1aSJzusmJui",

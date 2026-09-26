@@ -10,6 +10,9 @@ test("only accepts findings with exact quoted evidence", () => {
   assert.equal(validateReflection(valid, account), true);
   assert.equal(validateReflection({ ...valid, observations: [{ ...finding, quote: "She threatened me yesterday" }] }, account), false);
   assert.equal(validateReflection({ ...valid, observations: [{ ...finding, source: "fabricated screenshot" }] }, account), false);
+  const imported = `My typed account describes a conversation.\n--- SOURCE 1: screenshot.png ---\n${account}`;
+  assert.equal(validateReflection({ ...valid, observations: [{ ...finding, source: "user account" }] }, imported), false);
+  assert.equal(validateReflection({ ...valid, observations: [{ ...finding, source: "screenshot.png" }], summary: [{ ...finding, source: "screenshot.png" }] }, imported), true);
 });
 test("rejects invalid input before invoking AI", async () => {
   const response = await POST(new Request("http://localhost/api/self-mirror/reflection", {

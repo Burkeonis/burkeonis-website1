@@ -78,6 +78,119 @@ ${reflection.nextMove}
 Evidence quotes are excerpts from your supplied account, not independent verification.`;
   }
 
+  function setMode(next) {
+    if (!Object.hasOwn(modeCopy, next)) return;
+    mode = next;
+    document.querySelectorAll('.mode-btn').forEach((button) => {
+      const active = button.dataset.mode === mode;
+      button.classList.toggle('active', active);
+      button.setAttribute('aria-pressed', String(active));
+    });
+    const info = modeCopy[mode];
+    modeExplainer.replaceChildren();
+    const title = document.createElement('strong');
+    title.textContent = info.title;
+    const body = document.createElement('p');
+    body.textContent = info.body;
+    const use = document.createElement('span');
+    use.className = 'mode-use';
+    use.textContent = info.use;
+    modeExplainer.append(title, body, use);
+    status.textContent = `${info.title} MODE SELECTED / READY / NOTHING IS SAVED`;
+  }
+
+  function formatBytes(bytes) {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1048576) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / 1048576).toFixed(1)} MB`;
+  }
+
+  function revokePreviewUrls() {
+    previewUrls.forEach((url) => URL.revokeObjectURL(url));
+    previewUrls.clear();
+  }
+
+  function renderFiles() {
+    revokePreviewUrls();
+    fileList.replaceChildren();
+    queuedFiles.forEach((file, index) => {
+      const row = document.createElement('div');
+      row.className = 'file-item';
+      let visual;
+      if (file.type.startsWith('image/')) {
+        visual = document.createElement('img');
+        visual.className = 'file-thumb';
+        visual.alt = '';
+        const previewUrl = URL.createObjectURL(file);
+        previewUrls.add(previewUrl);
+        visual.src = previewUrl;
+      } else {
+        visual = document.createElement('div');
+        visual.className = 'file-icon';
+        visual.textContent = 'FILE';
+      }
+      const meta = document.createElement('div');
+      meta.className = 'file-meta';
+      const name = document.createElement('strong');
+      name.textContent = file.name;
+      const details = document.createElement('small');
+      details.textContent = `${file.type || 'unknown type'} / ${formatBytes(file.size)}`;
+      meta.append(name, details);
+      const remove = document.createElement('button');
+      remove.className = 'file-remove';
+      remove.type = 'button';
+      remove.setAttribute('aria-label', `Remove ${file.name}`);
+      remove.textContent = '×';
+      remove.addEventListener('click', () => {
+        queuedFiles.splice(index, 1);
+        renderFiles();
+      });
+      row.append(visual, meta, remove);
+      fileList.appendChild(row);
+    });
+    fileControls.hidden = !queuedFiles.length;
+  }
+
+  function addFiles(files) {
+    const incoming = [...files];
+    const allowed = incoming.filter((file) => (
+      file.size <= MAX_FILE_BYTES
+      && (
+        ['image/jpeg', 'image/png', 'image/webp'].includes(file.type)
+        || readableTextTypes.includes(file.type)
+        || /\.(txt|md|json|csv|log)$/i.test(file.name)
+      )
+    ));
+    const existing = new Set(queuedFiles.map((file) => `${file.name}-${file.size}-${file.lastModified}`));
+    allowed.forEach((file) => {
+      const key = `${file.name}-${file.size}-${file.lastModified}`;
+      if (!existing.has(key) && queuedFiles.length < MAX_FILES) {
+        queuedFiles.push(file);
+        existing.add(key);
+      }
+    });
+    renderFiles();
+    status.textContent = `${queuedFiles.length} FILE${queuedFiles.length === 1 ? '' : 'S'} READY / MAX 10 FILES, 5 MB EACH / NOTHING IS SAVED`;
+  }
+
+  async function extractFile(file, index, total) {
+    status.textContent = `READING ${index + 1} OF ${total}: ${file.name} / PROCESSING LOCALLY`;
+    progressBar.style.width = `${Math.round((index / total) * 100)}%`;
+    if (file.type.startsWith('image/')) {
+      if (!window.Tesseract) throw new Error('OCR library did not load.');
+      const result = await window.Tesseract.recognize(file, 'eng', {
+        ...OCR_OPTIONS,
+        logger(message) {
+          if (message.status === 'recognizing text') {
+            progressBar.style.width = `${Math.round(((index + (message.progress || 0)) / total) * 100)}%`;
+          }
+        },
+      });
+      return result.data.text.trim();
+    }
+    return (await file.text()).slice(0, MAX_IMPORTED_CHARS).trim();
+  }
+
   fileInput.addEventListener('change', (event) => {
     addFiles(event.target.files);
     fileInput.value = '';

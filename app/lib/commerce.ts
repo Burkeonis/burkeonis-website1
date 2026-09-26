@@ -238,19 +238,27 @@ export function isSelfMirrorProActive(status: string): boolean {
 export async function upsertSelfMirrorProEntitlement(
   db: D1Database,
   input: { customerId: string; email?: string | null; subscriptionId: string; status: string; currentPeriodEnd?: string | null },
-): Promise<void> {
+  expectedSubscriptionId: string | null,
+): Promise<boolean> {
   await ensureCommerceSchema(db);
-  await db.prepare(`INSERT INTO self_mirror_pro_entitlements
-    (stripe_customer_id, customer_email, stripe_subscription_id, status, current_period_end, updated_at)
-    VALUES (?, ?, ?, ?, ?, ?)
-    ON CONFLICT(stripe_customer_id) DO UPDATE SET
-      customer_email=excluded.customer_email,
-      stripe_subscription_id=excluded.stripe_subscription_id,
-      status=excluded.status,
-      current_period_end=excluded.current_period_end,
-      updated_at=excluded.updated_at`).bind(
-        input.customerId, input.email ?? null, input.subscriptionId, input.status, input.currentPeriodEnd ?? null, new Date().toISOString()
-      ).run();
+  // The caller verifies ownership with Stripe. Enforce its observed owner in the
+  // write itself: a handler that loses a race must reread and verify again.
+  const row = expectedSubscriptionId === null
+    ? await db.prepare(`INSERT INTO self_mirror_pro_entitlements
+        (stripe_customer_id, customer_email, stripe_subscription_id, status, current_period_end, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?)
+        ON CONFLICT(stripe_customer_id) DO NOTHING
+        RETURNING stripe_subscription_id`).bind(
+          input.customerId, input.email ?? null, input.subscriptionId, input.status, input.currentPeriodEnd ?? null, new Date().toISOString()
+        ).first()
+    : await db.prepare(`UPDATE self_mirror_pro_entitlements SET
+        customer_email = ?, stripe_subscription_id = ?, status = ?, current_period_end = ?, updated_at = ?
+        WHERE stripe_customer_id = ? AND stripe_subscription_id = ?
+        RETURNING stripe_subscription_id`).bind(
+          input.email ?? null, input.subscriptionId, input.status, input.currentPeriodEnd ?? null, new Date().toISOString(),
+          input.customerId, expectedSubscriptionId
+        ).first();
+  return row !== null;
 }
 
 export async function getSelfMirrorProEntitlement(db: D1Database, customerId: string): Promise<SelfMirrorProEntitlement | null> {

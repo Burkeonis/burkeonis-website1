@@ -1,9 +1,9 @@
-import { ORDER_BUMP_CODE, PRIMARY_PRODUCT_CODE, SELF_MIRROR_PRO_CODE, getCommerceBindings, getPaidProduct, recordAnalyticsEvent, recordPaidOrder, upsertSelfMirrorProEntitlement, verifyStripeSignature } from "../../../lib/commerce";
+import { ORDER_BUMP_CODE, PRIMARY_PRODUCT_CODE, SELF_MIRROR_PRO_CODE, getCommerceBindings, getPaidProduct, recordAnalyticsEvent, recordPaidOrder, verifyStripeSignature } from "../../../lib/commerce.ts";
+import { syncSelfMirrorProSubscription } from "../../../lib/self-mirror-pro-subscription.ts";
 
 export const dynamic = "force-dynamic";
 
 type StripeEvent = { id?: string; type?: string; livemode?: boolean; data?: { object?: { id?: string; customer?: string | null; status?: string; current_period_end?: number; metadata?: Record<string,string|undefined> | null } } };
-type StripeSubscription = { id?: string; livemode?: boolean; customer?: string | null; status?: string; current_period_end?: number; metadata?: Record<string,string|undefined> | null };
 type StripeCheckoutSession = { id?: string; livemode?: boolean; mode?: string; payment_status?: string; customer?: string | null; subscription?: string | null; customer_details?: { email?: string | null } | null; metadata?: Record<string, string | undefined> | null };
 
 function text(body: string, status: number): Response {
@@ -34,21 +34,15 @@ export async function POST(request: Request): Promise<Response> {
 
   const subscriptionEvent = event.type === "customer.subscription.created" || event.type === "customer.subscription.updated" || event.type === "customer.subscription.deleted";
   if (subscriptionEvent) {
-    const eventSubscription = event.data?.object as StripeSubscription | undefined;
+    const eventSubscription = event.data?.object;
     if (!eventSubscription?.id || eventSubscription.metadata?.product_code !== SELF_MIRROR_PRO_CODE) return text("Ignored subscription event.", 200);
-    // Retrieve current Stripe state so delayed webhooks cannot resurrect canceled access.
-    const subscriptionResponse = await fetch(`https://api.stripe.com/v1/subscriptions/${encodeURIComponent(eventSubscription.id)}`, { headers: { Authorization: `Basic ${btoa(`${bindings.STRIPE_SECRET_KEY}:`)}` } });
-    if (!subscriptionResponse.ok) return text("Subscription state could not be verified.", 502);
-    const subscription = (await subscriptionResponse.json()) as StripeSubscription;
-    if (subscription.id !== eventSubscription.id || subscription.livemode !== isLiveMode ||
-        !subscription.customer || !subscription.status || subscription.metadata?.product_code !== SELF_MIRROR_PRO_CODE) return text("Subscription is not eligible.", 400);
-    await upsertSelfMirrorProEntitlement(bindings.COMMERCE_DB, {
-      customerId: subscription.customer,
-      subscriptionId: subscription.id,
-      status: subscription.status,
-      currentPeriodEnd: subscription.current_period_end ? new Date(subscription.current_period_end * 1000).toISOString() : null,
+    const result = await syncSelfMirrorProSubscription(bindings.COMMERCE_DB, {
+      subscriptionId: eventSubscription.id,
+      secretKey: bindings.STRIPE_SECRET_KEY,
+      live: isLiveMode,
     });
-    await recordAnalyticsEvent(bindings.COMMERCE_DB, { eventName: `self_mirror_pro_${subscription.status}`, productCode: SELF_MIRROR_PRO_CODE });
+    if (!result) return text("Subscription ownership could not be verified.", 502);
+    await recordAnalyticsEvent(bindings.COMMERCE_DB, { eventName: `self_mirror_pro_${result.status}`, productCode: SELF_MIRROR_PRO_CODE });
     return text("Received.", 200);
   }
 
@@ -68,17 +62,14 @@ export async function POST(request: Request): Promise<Response> {
 
   if (productCode === SELF_MIRROR_PRO_CODE) {
     if (session.mode !== "subscription" || !session.customer || !session.subscription) return text("Incomplete Pro subscription checkout.", 400);
-    const subscriptionResponse = await fetch(`https://api.stripe.com/v1/subscriptions/${encodeURIComponent(session.subscription)}`, { headers: { Authorization: `Basic ${btoa(`${bindings.STRIPE_SECRET_KEY}:`)}` } });
-    if (!subscriptionResponse.ok) return text("Pro subscription could not be verified.", 502);
-    const subscription = (await subscriptionResponse.json()) as StripeSubscription;
-    if (subscription.id !== session.subscription || subscription.livemode !== isLiveMode || subscription.customer !== session.customer || !subscription.status || subscription.metadata?.product_code !== SELF_MIRROR_PRO_CODE) return text("Pro subscription is not eligible.", 400);
-    await upsertSelfMirrorProEntitlement(bindings.COMMERCE_DB, {
+    const result = await syncSelfMirrorProSubscription(bindings.COMMERCE_DB, {
       customerId: session.customer,
       email: session.customer_details?.email ?? null,
-      subscriptionId: subscription.id,
-      status: subscription.status,
-      currentPeriodEnd: subscription.current_period_end ? new Date(subscription.current_period_end * 1000).toISOString() : null,
+      subscriptionId: session.subscription,
+      secretKey: bindings.STRIPE_SECRET_KEY,
+      live: isLiveMode,
     });
+    if (!result) return text("Pro subscription ownership could not be verified.", 502);
     await recordAnalyticsEvent(bindings.COMMERCE_DB, { eventName: "self_mirror_pro_checkout_completed", productCode: SELF_MIRROR_PRO_CODE });
     return text("Received.", 200);
   }

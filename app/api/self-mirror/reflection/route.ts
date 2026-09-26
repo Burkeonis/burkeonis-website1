@@ -1,6 +1,6 @@
 export const dynamic = "force-dynamic";
 
-type AI = { run(model: string, input: { messages: { role: string; content: string }[]; response_format?: { type: string }; max_tokens?: number; temperature?: number }): Promise<unknown> };
+type AI = { run(model: string, input: { messages: { role: string; content: string }[]; response_format?: { type: string; json_schema?: unknown }; max_tokens?: number; temperature?: number }): Promise<unknown> };
 type Finding = { point: string; quote: string; source: string };
 type Result = { summary: Finding[]; observations: Finding[]; interpretations: Finding[]; missing: string[]; nextMove: string };
 const MODES = new Set(["mirror", "mediator", "abyss", "builder", "bullshit"]);
@@ -59,7 +59,20 @@ export async function POST(request: Request): Promise<Response> {
   try {
     const raw = await ai.run("@cf/meta/llama-3.3-70b-instruct-fp8-fast", {
       messages: [{ role: "system", content: system }, { role: "user", content: JSON.stringify({ mode, account: text }) }],
-      response_format: { type: "json_object" },
+      response_format: {
+        type: "json_schema",
+        json_schema: {
+          type: "object",
+          properties: {
+            summary: { type: "array", items: { type: "object", properties: { point: { type: "string" }, quote: { type: "string" }, source: { type: "string" } }, required: ["point", "quote", "source"] } },
+            observations: { type: "array", items: { type: "object", properties: { point: { type: "string" }, quote: { type: "string" }, source: { type: "string" } }, required: ["point", "quote", "source"] } },
+            interpretations: { type: "array", items: { type: "object", properties: { point: { type: "string" }, quote: { type: "string" }, source: { type: "string" } }, required: ["point", "quote", "source"] } },
+            missing: { type: "array", items: { type: "string" } },
+            nextMove: { type: "string" },
+          },
+          required: ["summary", "observations", "interpretations", "missing", "nextMove"],
+        },
+      },
       max_tokens: 1600,
       temperature: 0.2,
     });

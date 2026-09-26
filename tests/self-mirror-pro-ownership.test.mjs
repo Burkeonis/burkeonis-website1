@@ -11,6 +11,7 @@ import { POST } from "../app/api/webhooks/stripe/route.ts";
 const hooks = registerHooks({
   resolve(specifier, context, nextResolve) {
     if (specifier === "cloudflare:workers") return { url: "data:text/javascript,export const env = {}", shortCircuit: true };
+    if (specifier.endsWith("/lib/commerce")) return nextResolve(`${specifier}.ts`, context);
     return nextResolve(specifier, context);
   },
 });
@@ -231,6 +232,61 @@ test("equal Stripe creation timestamps preserve the existing entitlement", async
   const before = await f.read();
   assert.equal((await f.sync("sub_B")).outcome, "ignored");
   assert.deepEqual(await f.read(), before);
+});
+
+test("active Pro gets a signed secure session, and cancellation revokes access with that same cookie", async (t) => {
+  const f = await setup(t);
+  const { GET: session } = await import("../app/api/self-mirror/session/route.ts");
+  const { GET: entitlement } = await import("../app/api/self-mirror/entitlement/route.ts");
+  env.SELF_MIRROR_SESSION_SECRET = "local-session-secret-for-regression-testing-only";
+  f.sessions.set("cs_pro", { id: "cs_pro", livemode: false, mode: "subscription", customer,
+    subscription: "sub_B", metadata: { product_code: product } });
+  assert.equal((await deliver("customer.subscription.created", "sub_B")).status, 200);
+  const response = await session(new Request("https://example.test/api/self-mirror/session?session_id=cs_pro"));
+  assert.equal(response.status, 303);
+  assert.equal(response.headers.get("location"), "https://example.test/self-mirror?pro=active");
+  const cookie = response.headers.get("set-cookie");
+  assert.match(cookie, /^self_mirror_pro_session=/);
+  for (const attribute of ["HttpOnly", "Secure", "SameSite=Lax", "Path=/", "Max-Age=2592000"]) assert.ok(cookie.includes(attribute));
+  const request = () => new Request("https://example.test/api/self-mirror/entitlement", { headers: { cookie: cookie.split(";")[0] } });
+  assert.equal((await (await entitlement(request())).json()).pro, true);
+  f.subscriptions.get("sub_B").status = "canceled";
+  assert.equal((await deliver("customer.subscription.deleted", "sub_B")).status, 200);
+  const revoked = await (await entitlement(request())).json();
+  assert.equal(revoked.pro, false);
+  assert.equal(revoked.status, "canceled");
+  const canceledSession = await session(new Request("https://example.test/api/self-mirror/session?session_id=cs_pro"));
+  assert.equal(canceledSession.headers.get("set-cookie"), null);
+  assert.equal(canceledSession.headers.get("location"), "https://example.test/self-mirror?pro=pending");
+});
+
+test("Field Test stays a one-time checkout and its paid webhook fulfills once without a Pro entitlement", async (t) => {
+  const f = await setup(t);
+  const { GET: checkout } = await import("../app/api/checkout/route.ts");
+  const { getPaidProduct, getPaidOrder } = await import("../app/lib/commerce.ts");
+  const productCode = "self-mirror-field-test";
+  const stripeFetch = globalThis.fetch;
+  let form;
+  t.mock.method(globalThis, "fetch", async (url, init) => {
+    if (url === "https://api.stripe.com/v1/checkout/sessions" && init?.method === "POST") {
+      form = new URLSearchParams(init.body);
+      return Response.json({ id: "cs_field", url: "https://checkout.stripe.com/test-local-fixture", livemode: false });
+    }
+    return stripeFetch(url, init);
+  });
+  const response = await checkout(new Request(`https://example.test/api/checkout?product=${productCode}`));
+  assert.equal(response.status, 303);
+  assert.equal(form.get("mode"), "payment");
+  assert.equal(form.get("line_items[0][price]"), getPaidProduct(productCode).priceId);
+  assert.equal(form.get("metadata[product_code]"), productCode);
+  assert.equal(form.get("customer_creation"), "always");
+  assert.equal(form.has("subscription_data[metadata][product_code]"), false);
+  f.sessions.set("cs_field", { id: "cs_field", livemode: false, mode: "payment", payment_status: "paid", customer,
+    metadata: { product_code: productCode }, customer_details: { email: "field-test@example.test" } });
+  for (let i = 0; i < 2; i++) assert.equal((await deliver("checkout.session.completed", "cs_field")).status, 200);
+  assert.equal((await getPaidOrder(f.db, "cs_field")).productCode, productCode);
+  assert.equal(f.sqlite.prepare("SELECT count(*) AS count FROM commerce_orders").get().count, 1);
+  assert.equal(await f.read(), null);
 });
 
 test("contention is bounded and asks Stripe to retry", async (t) => {

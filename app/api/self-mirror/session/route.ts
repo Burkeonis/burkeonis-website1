@@ -20,7 +20,9 @@ export async function GET(request: Request): Promise<Response> {
   if (!entitlement || !isSelfMirrorProActive(entitlement.status)) return Response.redirect(new URL("/self-mirror?pro=pending", request.url), 303);
 
   const token = await createSelfMirrorSessionToken(session.customer, bindings.SELF_MIRROR_SESSION_SECRET);
-  const response = Response.redirect(new URL("/self-mirror?pro=active", request.url), 303);
+  // Response.redirect() has immutable headers; build a mutable response so the
+  // verified customer's session cookie can accompany the redirect.
+  const response = new Response(null, { status: 303, headers: { Location: new URL("/self-mirror?pro=active", request.url).toString() } });
   response.headers.append("Set-Cookie", `${COOKIE}=${encodeURIComponent(token)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`);
   return response;
 }

@@ -62,7 +62,7 @@
 
   function syncControls() {
     profileName.value = profile.name;
-    providerSelect.value = profile.provider;
+    providerSelect.value = 'browser';
     ollamaModel.value = profile.ollamaModel;
     memoryEnabled.checked = profile.memoryEnabled;
     memoryState.textContent = profile.memoryEnabled
@@ -186,7 +186,7 @@
 
   document.getElementById('saveProfile').addEventListener('click', () => {
     profile.name = profileName.value.trim();
-    profile.provider = providerSelect.value;
+    profile.provider = 'browser';
     profile.ollamaModel = ollamaModel.value.trim() || 'llama3.1:8b';
     profile.memoryEnabled = memoryEnabled.checked;
     const person = document.getElementById('relationshipPerson').value.trim();

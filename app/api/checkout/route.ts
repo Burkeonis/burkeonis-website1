@@ -99,7 +99,7 @@ export async function GET(request: Request): Promise<Response> {
   const origin = getSiteOrigin(request);
   const form = new URLSearchParams({
     mode: isSelfMirrorPro ? "subscription" : "payment",
-    success_url: `${origin}/order/success?session_id={CHECKOUT_SESSION_ID}`,
+    success_url: isSelfMirrorPro ? `${origin}/api/self-mirror/session?session_id={CHECKOUT_SESSION_ID}` : `${origin}/order/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${origin}/order/cancel`,
     "line_items[0][price]": isSelfMirrorPro ? bindings.STRIPE_SELF_MIRROR_PRO_PRICE_ID! : product!.priceId,
     "line_items[0][quantity]": "1",

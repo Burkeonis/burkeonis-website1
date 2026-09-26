@@ -59,14 +59,14 @@
   function refreshNotice() {
     const remaining = remainingText();
     copy.textContent = remaining > 0
-      ? `${remaining} of ${DAILY_LIMIT} browser-only reflections remain today. Your reflection can continue with focused Self Mirror field guides and pattern work.`
+      ? `${remaining} of ${DAILY_LIMIT} AI reflections remain today. Your reflection can continue with focused Self Mirror field guides and pattern work.`
       : 'Today’s public preview is complete. Continue with the Self Mirror Field Test or focused pattern work when you are ready to go deeper.';
 
     if (remaining === 0) {
       analyzeButton.disabled = true;
       analyzeButton.setAttribute('aria-disabled', 'true');
       analyzeButton.textContent = 'PREVIEW LIMIT REACHED';
-      status.textContent = 'PUBLIC PREVIEW COMPLETE / YOUR TEXT REMAINS ON THIS DEVICE';
+      status.textContent = 'PUBLIC PREVIEW COMPLETE / AI REFLECTIONS WERE PROCESSED; LOCAL MEMORY IS OPTIONAL';
     }
   }
 

@@ -71,21 +71,19 @@
   }
 
   analyzeButton.addEventListener('click', (event) => {
-    const usage = readUsage();
-    if (usage.count >= DAILY_LIMIT) {
+    if (readUsage().count >= DAILY_LIMIT) {
       event.preventDefault();
       event.stopImmediatePropagation();
       refreshNotice();
-      return;
     }
+  }, true);
 
-    const input = document.getElementById('mirrorInput');
-    if (!input || input.value.trim().length < 40) return;
-
+  document.addEventListener('self-mirror:reflection-complete', () => {
+    const usage = readUsage();
     usage.count += 1;
     writeUsage(usage);
-    window.setTimeout(refreshNotice, 0);
-  }, true);
+    refreshNotice();
+  });
 
   refreshNotice();
 })();

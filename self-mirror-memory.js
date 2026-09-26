@@ -263,33 +263,12 @@
     status.textContent = 'SELF MIRROR MEMORY ERASED FROM THIS BROWSER';
   });
 
-  document.getElementById('analyzeBtn').addEventListener('click', async () => {
-    const text = input.value.trim();
-    if (text.length < 40) return;
-    window.setTimeout(async () => {
-      let result = output.textContent;
-      const lens = document.getElementById('protocolLens').value;
-      if (lens !== 'core') {
-        result = `${result}\n\n${lens.toUpperCase()} WORKSHEET COMPANION\n${protocolPrompts[lens]}`;
-        output.textContent = result;
-      }
-      if (profile.provider === 'ollama') {
-        status.textContent = `OLLAMA / ${profile.ollamaModel} / REFLECTING LOCALLY`;
-        try {
-          const ollamaResult = await runOllama(text);
-          if (ollamaResult) {
-            output.textContent = ollamaResult;
-            result = ollamaResult;
-          }
-          status.textContent = 'OLLAMA REFLECTION COMPLETE / LOCAL DEVICE';
-        } catch {
-          output.textContent = `${result}\n\nOLLAMA CONNECTION\nOllama could not be reached at 127.0.0.1:11434. The built-in local mirror completed the reflection instead. Start Ollama, confirm the selected model is installed, and allow this site as a local origin.`;
-          result = output.textContent;
-          status.textContent = 'BUILT-IN REFLECTION COMPLETE / OLLAMA UNAVAILABLE';
-        }
-      }
-      remember(text, result);
-    }, 0);
+  document.addEventListener('self-mirror:reflection-complete', (event) => {
+    const { text, result } = event.detail;
+    const lens = document.getElementById('protocolLens').value;
+    const fullResult = lens !== 'core' ? `${result}\n\n${lens.toUpperCase()} WORKSHEET COMPANION\n${protocolPrompts[lens]}` : result;
+    output.textContent = fullResult;
+    remember(text, fullResult);
   });
 
   syncControls();

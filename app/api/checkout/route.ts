@@ -1,6 +1,7 @@
 import {
   ORDER_BUMP_CODE,
   PRIMARY_PRODUCT_CODE,
+  SELF_MIRROR_PRO_CODE,
   getPaidProduct,
   configurationProblem,
   getCommerceBindings,
@@ -86,23 +87,26 @@ export async function POST(request: Request): Promise<Response> {
 export async function GET(request: Request): Promise<Response> {
   const productCode = new URL(request.url).searchParams.get("product");
   const product = getPaidProduct(productCode);
-  if (!product || !productCode) return Response.redirect(new URL("/tools.html", request.url), 303);
+  const isSelfMirrorPro = productCode === SELF_MIRROR_PRO_CODE;
+  if ((!product && !isSelfMirrorPro) || !productCode) return Response.redirect(new URL("/tools.html", request.url), 303);
 
   const bindings = await getCommerceBindings();
   if (!bindings.STRIPE_SECRET_KEY) return json({ error: "Secure checkout is temporarily unavailable." }, 503);
   const isLiveMode = bindings.STRIPE_SECRET_KEY.startsWith("sk_live_");
   if (!isLiveMode && !bindings.STRIPE_SECRET_KEY.startsWith("sk_test_")) return json({ error: "Stripe checkout is not configured." }, 503);
 
+  if (isSelfMirrorPro && !bindings.STRIPE_SELF_MIRROR_PRO_PRICE_ID) return json({ error: "Self Mirror Pro checkout is not configured yet." }, 503);
   const origin = getSiteOrigin(request);
   const form = new URLSearchParams({
-    mode: "payment",
-    customer_creation: "always",
+    mode: isSelfMirrorPro ? "subscription" : "payment",
     success_url: `${origin}/order/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${origin}/order/cancel`,
-    "line_items[0][price]": product.priceId,
+    "line_items[0][price]": isSelfMirrorPro ? bindings.STRIPE_SELF_MIRROR_PRO_PRICE_ID! : product!.priceId,
     "line_items[0][quantity]": "1",
     "metadata[product_code]": productCode,
   });
+  if (!isSelfMirrorPro) form.set("customer_creation", "always");
+  if (isSelfMirrorPro) form.set("subscription_data[metadata][product_code]", SELF_MIRROR_PRO_CODE);
   const stripeResponse = await fetch("https://api.stripe.com/v1/checkout/sessions", { method: "POST", headers: { Authorization: `Basic ${btoa(`${bindings.STRIPE_SECRET_KEY}:`)}`, "Content-Type": "application/x-www-form-urlencoded" }, body: form.toString() });
   if (!stripeResponse.ok) return json({ error: "Checkout could not be started. Please try again." }, 502);
   const session = (await stripeResponse.json()) as { url?: string; livemode?: boolean };

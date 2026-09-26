@@ -2,8 +2,8 @@ import { ORDER_BUMP_CODE, PRIMARY_PRODUCT_CODE, SELF_MIRROR_PRO_CODE, getCommerc
 
 export const dynamic = "force-dynamic";
 
-type StripeEvent = { id?: string; type?: string; data?: { object?: { id?: string; customer?: string | null; status?: string; current_period_end?: number; metadata?: Record<string,string|undefined> | null } } };
-type StripeSubscription = { id?: string; customer?: string | null; status?: string; current_period_end?: number; metadata?: Record<string,string|undefined> | null };
+type StripeEvent = { id?: string; type?: string; livemode?: boolean; data?: { object?: { id?: string; customer?: string | null; status?: string; current_period_end?: number; metadata?: Record<string,string|undefined> | null } } };
+type StripeSubscription = { id?: string; livemode?: boolean; customer?: string | null; status?: string; current_period_end?: number; metadata?: Record<string,string|undefined> | null };
 type StripeCheckoutSession = { id?: string; livemode?: boolean; mode?: string; payment_status?: string; customer?: string | null; subscription?: string | null; customer_details?: { email?: string | null } | null; metadata?: Record<string, string | undefined> | null };
 
 function text(body: string, status: number): Response {
@@ -30,11 +30,18 @@ export async function POST(request: Request): Promise<Response> {
 
   let event: StripeEvent;
   try { event = JSON.parse(rawPayload) as StripeEvent; } catch { return text("Invalid webhook payload.", 400); }
+  if (event.livemode !== isLiveMode) return text("Webhook mode mismatch.", 400);
 
   const subscriptionEvent = event.type === "customer.subscription.created" || event.type === "customer.subscription.updated" || event.type === "customer.subscription.deleted";
   if (subscriptionEvent) {
-    const subscription = event.data?.object as StripeSubscription | undefined;
-    if (!subscription?.id || !subscription.customer || !subscription.status || subscription.metadata?.product_code !== SELF_MIRROR_PRO_CODE) return text("Ignored subscription event.", 200);
+    const eventSubscription = event.data?.object as StripeSubscription | undefined;
+    if (!eventSubscription?.id || eventSubscription.metadata?.product_code !== SELF_MIRROR_PRO_CODE) return text("Ignored subscription event.", 200);
+    // Retrieve current Stripe state so delayed webhooks cannot resurrect canceled access.
+    const subscriptionResponse = await fetch(`https://api.stripe.com/v1/subscriptions/${encodeURIComponent(eventSubscription.id)}`, { headers: { Authorization: `Basic ${btoa(`${bindings.STRIPE_SECRET_KEY}:`)}` } });
+    if (!subscriptionResponse.ok) return text("Subscription state could not be verified.", 502);
+    const subscription = (await subscriptionResponse.json()) as StripeSubscription;
+    if (subscription.id !== eventSubscription.id || subscription.livemode !== isLiveMode ||
+        !subscription.customer || !subscription.status || subscription.metadata?.product_code !== SELF_MIRROR_PRO_CODE) return text("Subscription is not eligible.", 400);
     await upsertSelfMirrorProEntitlement(bindings.COMMERCE_DB, {
       customerId: subscription.customer,
       subscriptionId: subscription.id,
@@ -64,7 +71,7 @@ export async function POST(request: Request): Promise<Response> {
     const subscriptionResponse = await fetch(`https://api.stripe.com/v1/subscriptions/${encodeURIComponent(session.subscription)}`, { headers: { Authorization: `Basic ${btoa(`${bindings.STRIPE_SECRET_KEY}:`)}` } });
     if (!subscriptionResponse.ok) return text("Pro subscription could not be verified.", 502);
     const subscription = (await subscriptionResponse.json()) as StripeSubscription;
-    if (subscription.id !== session.subscription || subscription.customer !== session.customer || !subscription.status || subscription.metadata?.product_code !== SELF_MIRROR_PRO_CODE) return text("Pro subscription is not eligible.", 400);
+    if (subscription.id !== session.subscription || subscription.livemode !== isLiveMode || subscription.customer !== session.customer || !subscription.status || subscription.metadata?.product_code !== SELF_MIRROR_PRO_CODE) return text("Pro subscription is not eligible.", 400);
     await upsertSelfMirrorProEntitlement(bindings.COMMERCE_DB, {
       customerId: session.customer,
       email: session.customer_details?.email ?? null,

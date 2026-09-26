@@ -1,6 +1,6 @@
 export const dynamic = "force-dynamic";
 
-type AI = { run(model: string, input: { messages: { role: string; content: string }[]; response_format?: { type: string } }): Promise<unknown> };
+type AI = { run(model: string, input: { messages: { role: string; content: string }[]; response_format?: { type: string }; max_tokens?: number; temperature?: number }): Promise<unknown> };
 type Finding = { point: string; quote: string; source: string };
 type Result = { summary: Finding[]; observations: Finding[]; interpretations: Finding[]; missing: string[]; nextMove: string };
 const MODES = new Set(["mirror", "mediator", "abyss", "builder", "bullshit"]);
@@ -9,12 +9,17 @@ const MAX_CHARS = 16000;
 function failure(message: string, status: number): Response {
   return Response.json({ error: message }, { status, headers: { "Cache-Control": "no-store" } });
 }
+function sourceContains(text: string, source: string, quote: string): boolean {
+  const blocks = [...text.matchAll(/^--- SOURCE \\d+: (.+?) ---$/gm)];
+  return blocks.some((match, index) =>
+    match[1] === source && text.slice(match.index! + match[0].length, blocks[index + 1]?.index ?? text.length).includes(quote));
+}
 function checkFindings(value: unknown, text: string): value is Finding[] {
   return Array.isArray(value) && value.length <= 5 && value.every((item) =>
     item && typeof item.point === "string" && item.point.length <= 400 &&
     typeof item.quote === "string" && item.quote.length >= 12 && item.quote.length <= 500 &&
     typeof item.source === "string" && item.source.length <= 120 &&
-    text.includes(item.quote));
+    text.includes(item.quote) && (item.source === "user account" || sourceContains(text, item.source, item.quote)));
 }
 export function validateReflection(value: unknown, text: string): value is Result {
   if (!value || typeof value !== "object") return false;
@@ -55,6 +60,8 @@ export async function POST(request: Request): Promise<Response> {
     const raw = await ai.run("@cf/meta/llama-3.3-70b-instruct-fp8-fast", {
       messages: [{ role: "system", content: system }, { role: "user", content: JSON.stringify({ mode, account: text }) }],
       response_format: { type: "json_object" },
+      max_tokens: 1600,
+      temperature: 0.2,
     });
     const response = raw as { response?: unknown };
     const result = typeof response?.response === "string" ? JSON.parse(response.response) : response?.response;

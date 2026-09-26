@@ -10,7 +10,7 @@ function failure(message: string, status: number): Response {
   return Response.json({ error: message }, { status, headers: { "Cache-Control": "no-store" } });
 }
 function sourceContains(text: string, source: string, quote: string): boolean {
-  const blocks = [...text.matchAll(/^--- SOURCE \\d+: (.+?) ---$/gm)];
+  const blocks = [...text.matchAll(/^--- SOURCE \d+: (.+?) ---$/gm)];
   return blocks.some((match, index) =>
     match[1] === source && text.slice(match.index! + match[0].length, blocks[index + 1]?.index ?? text.length).includes(quote));
 }

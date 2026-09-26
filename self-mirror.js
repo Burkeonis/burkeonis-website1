@@ -3,7 +3,7 @@
 
   const MAX_FILES = 10;
   const MAX_FILE_BYTES = 5 * 1024 * 1024;
-  const MAX_IMPORTED_CHARS = 100000;
+  const MAX_IMPORTED_CHARS = 16000;
   const OCR_OPTIONS = Object.freeze({
     workerPath: '/assets/vendor/tesseract/worker.min.js',
     corePath: '/assets/vendor/tesseract/core',

@@ -59,33 +59,31 @@
   function refreshNotice() {
     const remaining = remainingText();
     copy.textContent = remaining > 0
-      ? `${remaining} of ${DAILY_LIMIT} browser-only reflections remain today. Your reflection can continue with focused Self Mirror field guides and pattern work.`
+      ? `${remaining} of ${DAILY_LIMIT} AI reflections remain today. Your reflection can continue with focused Self Mirror field guides and pattern work.`
       : 'Today’s public preview is complete. Continue with the Self Mirror Field Test or focused pattern work when you are ready to go deeper.';
 
     if (remaining === 0) {
       analyzeButton.disabled = true;
       analyzeButton.setAttribute('aria-disabled', 'true');
       analyzeButton.textContent = 'PREVIEW LIMIT REACHED';
-      status.textContent = 'PUBLIC PREVIEW COMPLETE / YOUR TEXT REMAINS ON THIS DEVICE';
+      status.textContent = 'PUBLIC PREVIEW COMPLETE / AI REFLECTIONS WERE PROCESSED; LOCAL MEMORY IS OPTIONAL';
     }
   }
 
   analyzeButton.addEventListener('click', (event) => {
-    const usage = readUsage();
-    if (usage.count >= DAILY_LIMIT) {
+    if (readUsage().count >= DAILY_LIMIT) {
       event.preventDefault();
       event.stopImmediatePropagation();
       refreshNotice();
-      return;
     }
+  }, true);
 
-    const input = document.getElementById('mirrorInput');
-    if (!input || input.value.trim().length < 40) return;
-
+  document.addEventListener('self-mirror:reflection-complete', () => {
+    const usage = readUsage();
     usage.count += 1;
     writeUsage(usage);
-    window.setTimeout(refreshNotice, 0);
-  }, true);
+    refreshNotice();
+  });
 
   refreshNotice();
 })();

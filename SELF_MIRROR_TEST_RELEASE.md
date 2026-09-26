@@ -21,7 +21,7 @@ Anonymous preview identity is the Cloudflare-supplied `CF-Connecting-IP` header,
 - Deliver `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `customer.subscription.created`, `customer.subscription.updated`, and `customer.subscription.deleted` to `/api/webhooks/stripe`.
 - Keep existing one-time commerce: `DOWNLOAD_TOKEN_SECRET`, `STRIPE_PATTERN_FILES_PRICE_ID`, optional `STRIPE_SHADOW_WORK_PRICE_ID`, `PATTERN_FILES_OBJECT_KEY`, `PATTERN_FILES_WITH_SHADOW_OBJECT_KEY`, `COMMERCE_DB`, and `PRODUCT_FILES`. Existing product-specific prices in commerce code remain unchanged.
 
-The Pro checkout return visits `/api/self-mirror/session`, which retrieves the Checkout Session from Stripe and requires an active/trialing D1 entitlement before setting a 30-day signed, HttpOnly, Secure, SameSite=Lax cookie. The entitlement endpoint verifies that cookie and rechecks D1 each time. Cancellation or deletion events update the entitlement; inactive statuses deny Pro. The public Pro purchase CTA remains hidden.
+The Pro checkout return visits `/api/self-mirror/session`, which retrieves the Checkout Session from Stripe and requires an active/trialing D1 entitlement before setting a 30-day signed, HttpOnly, Secure, SameSite=Lax cookie. The entitlement endpoint verifies that cookie and rechecks D1 each time. Subscription lifecycle webhooks retrieve current Stripe state before updating D1, so delayed events cannot restore stale active access. Cancellation or deletion updates the entitlement; inactive statuses deny Pro. If Stripe retrieval fails, the webhook returns a retryable error. The public Pro purchase CTA remains hidden.
 
 ## Verification gate
 

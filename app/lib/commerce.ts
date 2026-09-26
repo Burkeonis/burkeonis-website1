@@ -40,6 +40,9 @@ export type CommerceBindings = {
   PRODUCT_FILES?: R2Bucket;
   STRIPE_SELF_MIRROR_PRO_PRICE_ID?: string;
   SELF_MIRROR_SESSION_SECRET?: string;
+  SELF_MIRROR_RATE_LIMIT_SECRET?: string;
+  SELF_MIRROR_FREE_DAILY_LIMIT?: string;
+  SELF_MIRROR_PRO_DAILY_LIMIT?: string;
 };
 
 export type SelfMirrorProEntitlement = {
